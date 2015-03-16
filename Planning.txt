@@ -1,0 +1,5 @@
+- Pieces as class (value, x, y, etc.)
+- PieceWell class (holds pieces at beginning of game - setup)
+- Board tiles as class (type, moveability, etc.)
+- Button class (end turn, reset, etc.)
+- UI class (paint stuff)
