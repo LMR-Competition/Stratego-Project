@@ -1,8 +1,6 @@
 package com.stratego.game;
 
 public class Board {
-	public static int[][] SoldierHereRank = new int[10][10];
-	public static int[][] SoldierHereSide = new int[10][10];
 	public static boolean[][] moveable = new boolean[10][10];
 	public static int[][] Board = new int[10][10];
 	public static void makeBoard(){
@@ -20,11 +18,5 @@ public class Board {
 				Board[x][y] = x+y*10;
 			}
 		}
-	}
-	public static int getPieceRank(int currentx, int currenty){
-		return SoldierHereRank[currentx][currenty];
-	}
-	public static int getPieceSide(int currentx, int currenty){
-		return SoldierHereSide[currentx][currenty];
 	}
 }
