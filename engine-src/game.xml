@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
-<game name="Test Game" id="TestGame" version="0.1.0">
+<game name="Stratego" id="Stratego" version="0.1.0">
 	<game-location>com.stratego.game.MainGame</game-location>
 </game>
