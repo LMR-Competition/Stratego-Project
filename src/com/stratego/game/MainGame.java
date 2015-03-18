@@ -30,8 +30,11 @@ public class MainGame {
 
 	@GameAction(ActionType.INITIALIZE)
 	public static void initialize() {
+		
 		for (int x = 0; x<=10; x++){
+			
 			for (int y = 0; y<=10; y++){
+				
 				gameBoard[x][y] = new Board(x,y);
 			}
 		}
@@ -43,8 +46,6 @@ public class MainGame {
 
 	@GameAction(ActionType.UI_POSTSHOW)
 	public static void uiPostShow() {
-		
-		//Screen.changeViewMode(true);
 		
 		Screen.startTick();
 	}
