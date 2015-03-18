@@ -11,7 +11,7 @@ public class Piece {
 }
 /* OLD:
 package com.stratego.game;
-/** Rank 1-9 as expected, Rank10=bomb, rank11=flag || side 0=red | side 1=blue*/
+/** Rank 1-9 as expected, Rank10=bomb, rank11=flag || side 0=red | side 1=blue
 public class Piece {
 	public static int[][] SoldierHereRank = new int[10][10];
 	public static int[][] SoldierHereSide = new int[10][10];
