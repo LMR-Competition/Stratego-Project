@@ -20,7 +20,7 @@ public class Movement {
     PPnum++;
   }
   public static void GatherPiece(int x, int y){
-    if (soldiers[gameBoard[x][y].piece]<=10){
+    if (soldiers[gameBoard[x][y].piece].rank<=10){ //no soldiers supposed to be here?
     heldPiece = gameBoard[x][y].piece;
     } else {
       //play error noise?
@@ -31,12 +31,12 @@ public class Movement {
     if((heldPiece.x == x&& heldPiece.y == y)||1<Math.abs(heldPiece.x-x) ||1<Math.abs(holdPiece.y-y){
     //error noise?
     } else(if gameBoard[x][y].piece !=null){
-    //Combat?
+      Combat.engage(heldPiece, gameBoard[x][y].piece);
     }
     else{
-    //place piece here
+    gameBoard[x][y].piece = heldPiece;
+    gameBoard[heldPiece.x][heldPiece.y].piece = null;
     }
-    //end
     heldPiece = null;
   }
 }
