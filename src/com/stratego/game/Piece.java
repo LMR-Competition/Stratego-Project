@@ -1,4 +1,16 @@
 package com.stratego.game;
+/** Rank 1-9 as expected, rank10=spy, Rank11=bomb, rank12=flag|| side 0=red | side 1=blue*/
+public class Piece {
+	public static int[] SoldierLocation = new int[2];
+	public static int SoldierSide;
+	public static int SoldierRank;
+	public Piece(int rank, int side){
+		SoldierRank = rank;
+		SoldierSide = side;
+	}
+}
+/* OLD:
+package com.stratego.game;
 /** Rank 1-9 as expected, Rank10=bomb, rank11=flag || side 0=red | side 1=blue*/
 public class Piece {
 	public static int[][] SoldierHereRank = new int[10][10];
@@ -14,3 +26,4 @@ public class Piece {
 		return SoldierHereSide[currentx][currenty];
 	}
 }
+*/
