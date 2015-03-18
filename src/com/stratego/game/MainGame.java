@@ -13,7 +13,9 @@ import com.lutz.engine.ui.Screen;
 import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
 
 public class MainGame {
-
+	//TODO: make Setup Function and call for wells and board
+	public static Piece[] Soldiers = new Piece[80];
+	
 	@GameResource(ResourceType.GAME_ICON)
 	public static Image icon = ImageResource.getExternalImage(
 			"resources/images/icon.png").getImage();
