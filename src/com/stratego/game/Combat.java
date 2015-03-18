@@ -13,7 +13,7 @@ public class Combat {
           gameBoard[attacker.x][attacker.y].piece=null;
         } else{
           gameBoard[attacker.x][attacker.y].piece=null;
-        }
+        } else //others
       }
       //special cases
     } else{// Send to GUI from inside or outside ifs? What to do when both removed
