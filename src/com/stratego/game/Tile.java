@@ -7,7 +7,7 @@ public class Tile {
 	
 	public Tile(int x,int y){
 		
-		if ((y==4&&(x==2||x==3|| x==6||x==7))||(y==5&&(x==2||x==3|| x==6||x==7))){
+		if ((y == 4 || y == 5) && (x == 2 || x == 3 || x == 6 || x == 7)){
 			
 			moveable = false;
 			
