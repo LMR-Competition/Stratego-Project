@@ -14,6 +14,7 @@ import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
 
 public class MainGame {
 	//TODO: make Setup Function and call for wells and board
+	/**Currently not used beyond creation, work done through the piece stored by gameBoard. Possible to remove this array?*/
 	public static Piece[] soldiers = new Piece[80];
 	public static Tile[][] gameBoard = new Tile[10][10];
 	
