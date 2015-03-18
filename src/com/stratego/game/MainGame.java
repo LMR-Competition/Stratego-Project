@@ -15,6 +15,7 @@ import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
 public class MainGame {
 	//TODO: make Setup Function and call for wells and board
 	public static Piece[] Soldiers = new Piece[80];
+	public static Board[][] GameBoard = new Board[10][10];
 	
 	@GameResource(ResourceType.GAME_ICON)
 	public static Image icon = ImageResource.getExternalImage(
@@ -29,6 +30,11 @@ public class MainGame {
 
 	@GameAction(ActionType.INITIALIZE)
 	public static void initialize() {
+		for (int x = 0; x<=10; x++){
+			for (int y = 0; y<=10; y++){
+				GameBoard[x][y] = new Board(x,y);
+			}
+		}
 	}
 
 	@GameAction(ActionType.UI_PRESHOW)
