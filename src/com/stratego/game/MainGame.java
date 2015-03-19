@@ -13,11 +13,14 @@ import com.lutz.engine.ui.Screen;
 import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
 
 public class MainGame {
-	//TODO: make Setup Function and call for wells and board
-	/**Currently not used beyond creation, work done through the piece stored by gameBoard. Possible to remove this array?*/
+	// TODO: make Setup Function and call for wells and board
+	/**
+	 * Currently not used beyond creation, work done through the piece stored by
+	 * gameBoard. Possible to remove this array?
+	 */
 	public static Piece[] soldiers = new Piece[80];
 	public static Tile[][] gameBoard = new Tile[10][10];
-	
+
 	@GameResource(ResourceType.GAME_ICON)
 	public static Image icon = ImageResource.getExternalImage(
 			"resources/images/icon.png").getImage();
@@ -31,23 +34,26 @@ public class MainGame {
 
 	@GameAction(ActionType.INITIALIZE)
 	public static void initialize() {
-		
-		for (int x = 0; x < 10; x++){
-			
-			for (int y = 0; y < 10; y++){
-				
-				gameBoard[x][y] = new Tile(x,y);
+
+		for (int x = 0; x < 10; x++) {
+
+			for (int y = 0; y < 10; y++) {
+
+				gameBoard[x][y] = new Tile(x, y);
 			}
 		}
 	}
 
 	@GameAction(ActionType.UI_PRESHOW)
 	public static void uiPreShow() {
+
+		MainGame.gameBoard[1][3].piece = new Piece(1, 3, 1, 1);
+		MainGame.gameBoard[2][3].piece = new Piece(2, 3, 1, 1);
 	}
 
 	@GameAction(ActionType.UI_POSTSHOW)
 	public static void uiPostShow() {
-		
+
 		Screen.startTick();
 	}
 

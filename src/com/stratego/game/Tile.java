@@ -2,8 +2,8 @@ package com.stratego.game;
 
 public class Tile {
 	
-	public static boolean moveable;
-	public static Piece piece = null;
+	public boolean moveable;
+	public Piece piece = null;
 	
 	public Tile(int x,int y){
 		

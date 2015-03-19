@@ -3,17 +3,16 @@ package com.stratego.game;
 /** Rank 1-9 as expected, rank10=spy, Rank11=bomb, rank12=flag|| side 0=red | side 1=blue*/
 public class Piece {
 	
-	public static int soldierSide;
+	public int soldierSide;
 	
-	public static int soldierRank;
+	public int soldierRank;
+
+	public int x, y;
 	
-	public static int x;
-	
-	public static int y;
-	
-	public Piece(int newx, int newy, int rank, int side){
-		x=newx;
-		y=newy;
+	public Piece(int x, int y, int rank, int side){
+
+		this.x = x;
+		this.y = y;
 		soldierRank = rank;
 		soldierSide = side;
 	}

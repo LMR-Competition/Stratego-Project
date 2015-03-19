@@ -1,8 +1,10 @@
 package com.stratego.game.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -11,6 +13,9 @@ import java.awt.event.MouseMotionListener;
 
 import com.lutz.engine.resources.FontResource;
 import com.lutz.engine.ui.graphics.GraphicsEngine;
+import com.stratego.game.MainGame;
+import com.stratego.game.Movement;
+import com.stratego.game.Tile;
 
 public class Screen {
 
@@ -19,10 +24,25 @@ public class Screen {
 	 * 
 	 * 0 - Main menu 1 - Instructions screen 2 - Game screen
 	 */
-	private static int screenModeValue = 2, mouseX = 0, mouseY = 0;
+	private static int screenModeValue = 2, mouseX = 0, mouseY = 0,
+			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1;
 
-	private static boolean resetSel = false, undoSel = false,
-			endTurnSel = false, instructionsSel = false;
+	private static boolean pieceSelected = false;
+
+	private static boolean startSel = false, loadSel = false, quitSel = false,
+			resetSel = false, undoSel = false, endTurnSel = false,
+			instructionsSel = false, mouseLockedToOverlay = false,
+			instructionsCloseSel = false, instructionsShown = false;
+
+	/**
+	 * Retrieves the grid x/y value where the mouse is located (0-9)<br>
+	 * If both values are -1 (there should never be a time where only one is),
+	 * the mouse is not on the grid
+	 */
+	public static Point getMouseLocationOnGrid() {
+
+		return new Point(gridMouseX, gridMouseY);
+	}
 
 	public static MouseListener getMouseListener() {
 
@@ -35,14 +55,37 @@ public class Screen {
 
 				case 2:
 
-					if (resetSel) {
+					if (!mouseLockedToOverlay) {
 
-					} else if (undoSel) {
+						if (resetSel) {
 
-					} else if (endTurnSel) {
+						} else if (undoSel) {
 
-					} else if (instructionsSel) {
+						} else if (endTurnSel) {
 
+						} else if (instructionsSel) {
+
+							mouseLockedToOverlay = true;
+							instructionsShown = true;
+
+						} else if (gridMouseX >= 0 && gridMouseY >= 0) {
+
+							if (MainGame.gameBoard[gridMouseX][gridMouseY].moveable
+									&& MainGame.gameBoard[gridMouseX][gridMouseY].piece != null) {
+
+								pieceSelected = true;
+								selectX = gridMouseX;
+								selectY = gridMouseY;
+							}
+						}
+
+					} else if (instructionsShown) {
+
+						if (instructionsCloseSel) {
+
+							mouseLockedToOverlay = false;
+							instructionsShown = false;
+						}
 					}
 
 					break;
@@ -107,7 +150,10 @@ public class Screen {
 
 	private static final Color GOLD = new Color(255, 199, 0),
 			DARK_RED = new Color(150, 0, 0), DARK_RED_BORDER = new Color(120,
-					0, 0);
+					0, 0), PARCHMENT = new Color(255, 253, 150),
+			RED_BUTTON_TOP = new Color(219, 32, 32),
+			RED_BUTTON_BOTTOM = new Color(198, 22, 22), WOOD = new Color(60,
+					61, 3), GRASS = Color.GREEN, WATER = Color.BLUE;
 
 	public static void draw(GraphicsEngine engine) {
 
@@ -139,6 +185,92 @@ public class Screen {
 			g.drawString("stratego", (engine.getWidth() / 2)
 					- (g.getFontMetrics().stringWidth("stratego") / 2), 80 + (g
 					.getFontMetrics().getHeight() / 4));
+
+			// TODO: Make wooden pole next to banners
+
+			// QUIT
+
+			int xLeft = 20;
+			int xRight = 400;
+			int yTop = engine.getHeight() - 100;
+			int yBottom = engine.getHeight() - 40;
+
+			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
+
+				quitSel = true;
+
+				g.setColor(RED_BUTTON_BOTTOM.brighter());
+
+			} else {
+
+				quitSel = false;
+
+				g.setColor(RED_BUTTON_BOTTOM);
+			}
+
+			g.fillPolygon(new int[] { 20, 20, 350, 400 },
+					new int[] { engine.getHeight() - 40,
+							engine.getHeight() - 70, engine.getHeight() - 70,
+							engine.getHeight() - 40 }, 4);
+
+			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
+
+				quitSel = true;
+
+				g.setColor(RED_BUTTON_TOP.brighter());
+
+			} else {
+
+				quitSel = false;
+
+				g.setColor(RED_BUTTON_TOP);
+			}
+
+			g.fillPolygon(new int[] { 20, 20, 400, 350 },
+					new int[] { engine.getHeight() - 70,
+							engine.getHeight() - 100, engine.getHeight() - 100,
+							engine.getHeight() - 70 }, 4);
+
+			// LOAD
+
+			yTop = engine.getHeight() - 160;
+			yBottom = engine.getHeight() - 100;
+
+			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
+
+				loadSel = true;
+
+				g.setColor(RED_BUTTON_BOTTOM.brighter());
+
+			} else {
+
+				loadSel = false;
+
+				g.setColor(RED_BUTTON_BOTTOM);
+			}
+
+			g.fillPolygon(new int[] { 20, 20, 350, 400 },
+					new int[] { engine.getHeight() - 100,
+							engine.getHeight() - 130, engine.getHeight() - 130,
+							engine.getHeight() - 100 }, 4);
+
+			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
+
+				quitSel = true;
+
+				g.setColor(RED_BUTTON_TOP.brighter());
+
+			} else {
+
+				quitSel = false;
+
+				g.setColor(RED_BUTTON_TOP);
+			}
+
+			g.fillPolygon(new int[] { 20, 20, 400, 350 },
+					new int[] { engine.getHeight() - 130,
+							engine.getHeight() - 160, engine.getHeight() - 160,
+							engine.getHeight() - 130 }, 4);
 
 			break;
 
@@ -180,7 +312,8 @@ public class Screen {
 			int yT = 2;
 			int yB = 34;
 
-			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
+					&& !mouseLockedToOverlay) {
 
 				endTurnSel = true;
 
@@ -216,7 +349,8 @@ public class Screen {
 			xL = 4;
 			xR = xL + (g.getFontMetrics().stringWidth(reset)) + 40;
 
-			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
+					&& !mouseLockedToOverlay) {
 
 				resetSel = true;
 
@@ -224,7 +358,7 @@ public class Screen {
 
 			} else {
 
-				resetSel = true;
+				resetSel = false;
 
 				g.setColor(GOLD);
 			}
@@ -248,7 +382,8 @@ public class Screen {
 			xL = xR + 4;
 			xR = xL + (g.getFontMetrics().stringWidth(undo)) + 40;
 
-			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
+					&& !mouseLockedToOverlay) {
 
 				undoSel = true;
 
@@ -280,7 +415,8 @@ public class Screen {
 					- (g.getFontMetrics().stringWidth(instructions) + 44);
 			xR = engine.getWidth() - 4;
 
-			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
+					&& !mouseLockedToOverlay) {
 
 				instructionsSel = true;
 
@@ -288,7 +424,7 @@ public class Screen {
 
 			} else {
 
-				instructionsSel = true;
+				instructionsSel = false;
 
 				g.setColor(GOLD);
 			}
@@ -307,14 +443,197 @@ public class Screen {
 					xL + (g.getFontMetrics().stringWidth(instructions) / 2)
 							- 54, 20 + (g.getFontMetrics().getHeight() / 4));
 
+			// ==========
 			// GAME BOARD
+			// ==========
 
-			g.setColor(Color.GREEN);
+			// GRID
 
-			g.fillRect((engine.getWidth() / 2)
-					- ((engine.getHeight() - buttonBarHeight) / 2),
-					buttonBarHeight, (engine.getHeight() - buttonBarHeight),
-					(engine.getHeight() - buttonBarHeight));
+			int gridSquareSize = (int) Math
+					.ceil(((double) engine.getHeight() - buttonBarHeight) / 10);
+
+			int gXL = (engine.getWidth() / 2)
+					- ((engine.getHeight() - buttonBarHeight) / 2);
+			int gXR = (engine.getWidth() / 2)
+					+ ((engine.getHeight() - buttonBarHeight) / 2);
+			int gYT = buttonBarHeight;
+			int gYB = engine.getHeight();
+
+			for (int x = 0; x < 10; x++) {
+
+				for (int y = 0; y < 10; y++) {
+
+					Tile t = MainGame.gameBoard[x][y];
+
+					if (t.moveable) {
+
+						g.setColor(GRASS);
+
+					} else {
+
+						g.setColor(WATER);
+					}
+
+					g.fillRect(gXL + (gridSquareSize * x), gYT
+							+ (gridSquareSize * y), gridSquareSize + 1,
+							gridSquareSize + 1);
+				}
+			}
+
+			// SHOW POSSIBLE MOVES
+
+			if (pieceSelected) {
+
+				Point[] possible = Movement
+						.getMoveRange(MainGame.gameBoard[selectX][selectY].piece);
+
+				for (Point p : possible) {
+
+					if (MainGame.gameBoard[p.x][p.y].piece == null
+							&& MainGame.gameBoard[p.x][p.y].moveable) {
+
+						g.setColor(Color.GRAY);
+
+					} else {
+
+						g.setColor(Color.RED);
+					}
+
+					g.setComposite(AlphaComposite.getInstance(
+							AlphaComposite.SRC_OVER, 0.3f));
+
+					g.fillRect(gXL + (gridSquareSize * p.x), gYT
+							+ (gridSquareSize * p.y), gridSquareSize,
+							gridSquareSize);
+
+					g.setComposite(AlphaComposite.getInstance(
+							AlphaComposite.SRC_OVER, 0.6f));
+
+					g.drawRect(gXL + (gridSquareSize * p.x), gYT
+							+ (gridSquareSize * p.y), gridSquareSize,
+							gridSquareSize);
+				}
+			}
+
+			if (mX >= gXL && mX <= gXR && mY >= gYT && mY <= gYB
+					&& !mouseLockedToOverlay) {
+
+				for (int i = 0; i < 10; i++) {
+
+					int xMin, xMax;
+
+					xMin = gridSquareSize * i;
+					xMax = gridSquareSize * (i + 1) - 1;
+
+					if (mX >= (gXL + xMin) && mX <= (gXL + xMax)) {
+
+						gridMouseX = i;
+					}
+				}
+
+				for (int i = 0; i < 10; i++) {
+
+					int yMin, yMax;
+
+					yMin = gridSquareSize * i;
+					yMax = gridSquareSize * (i + 1) - 1;
+
+					if (mY >= (gYT + yMin) && mY <= (gYT + yMax)) {
+
+						gridMouseY = i;
+					}
+				}
+
+			} else {
+
+				gridMouseX = -1;
+				gridMouseY = -1;
+			}
+
+			if (gridMouseX >= 0 && gridMouseX < 10 && gridMouseY >= 0
+					&& gridMouseY < 10) {
+
+				if ((MainGame.gameBoard[gridMouseX][gridMouseY].moveable
+						&& (pieceSelected && (MainGame.gameBoard[gridMouseX][gridMouseY].piece == null)) || !pieceSelected)) {
+
+					g.setColor(Color.BLACK);
+
+				} else {
+
+					g.setColor(Color.RED);
+				}
+
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.8f));
+				g.drawRect(gXL + (gridMouseX * gridSquareSize), gYT
+						+ (gridMouseY * gridSquareSize), gridSquareSize - 1,
+						gridSquareSize - 1);
+			}
+
+			// =========
+			// TOP LEVEL
+			// =========
+
+			// INSTRUCTIONS
+
+			if (instructionsShown) {
+
+				g.setColor(Color.BLACK);
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.6f));
+				g.fillRect(0, 0, engine.getWidth(), engine.getHeight());
+
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 1f));
+
+				g.setColor(PARCHMENT);
+				int instHeight = engine.getHeight() - 100;
+				g.fillRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+						instHeight, instHeight);
+				g.setColor(PARCHMENT.darker());
+				g.drawRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+						instHeight, instHeight);
+
+				// INSTRUCTIONS CLOSE
+
+				String instClose = "CLOSE";
+
+				xL = (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(instClose) - 20);
+				xR = (engine.getWidth() / 2)
+						+ (g.getFontMetrics().stringWidth(instClose) + 20);
+				yT = (engine.getHeight() / 2) + (instHeight / 2) - 42;
+				yB = yT + 34;
+
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
+						&& instructionsShown) {
+
+					instructionsCloseSel = true;
+
+					g.setColor(GOLD.brighter());
+
+				} else {
+
+					instructionsCloseSel = false;
+
+					g.setColor(GOLD);
+				}
+
+				g.fillRect(xL, yT,
+						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+
+				g.setColor(g.getColor().darker());
+
+				g.drawRect(xL, yT,
+						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+
+				g.setColor(Color.BLACK);
+
+				g.drawString(instClose,
+						xL + 5 + (g.getFontMetrics().stringWidth(instClose))
+								- 54, yT + 17
+								+ (g.getFontMetrics().getHeight() / 4));
+			}
 
 			break;
 		}
