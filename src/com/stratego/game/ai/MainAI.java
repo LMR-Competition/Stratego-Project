@@ -1,3 +1,5 @@
+package com.stratego.game.ai;
+
 public class MainAI{
   public static void aiTurn(){
     //weighting?
