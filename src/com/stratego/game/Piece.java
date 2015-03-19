@@ -7,6 +7,10 @@ public class Piece {
 	
 	public int soldierRank;
 
+	boolean visible = false;
+	
+	boolean justAttacked = false;
+
 	public int x, y;
 	
 	public Piece(int x, int y, int rank, int side){
