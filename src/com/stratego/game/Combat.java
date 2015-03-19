@@ -1,6 +1,5 @@
 /* NEEDS:
-Place to send information of the piece winning combat so the piece can be displayed to the opponent on their next turn
-Or Log the player can see?
+Log the player can see?
  */
 package com.stratego.game;
 
@@ -8,7 +7,7 @@ public class Combat {
 	
 	public static void engage(Piece attacker, Piece defender) {
 		
-		if (attacker.soldierRank == 10 || defender.soldierRank > 9) {
+		if (attacker.soldierRank == 10 || defender.soldierRank > 10) {
 
 			if (attacker.soldierRank == 10) {
 
@@ -20,15 +19,22 @@ public class Combat {
 				} else {
 
 					MainGame.gameBoard[attacker.x][attacker.y].piece = null;
+
 				}
+			} if (defender.soldierRank == 11){
+				if (attacker.soldierRank == 8){
+					MainGame.gameBoard[defender.x][defender.y].piece = attacker;
+					MainGame.gameBoard[attacker.x][attacker.y].piece = null;
+				} else {
+					MainGame.gameBoard[attacker.x][attacker.y].piece = null;
+				}
+			} else if (defender.soldierRank ==12 ){
+
+			// TODO When won
+			
 			}
 
-			// TODO special cases
-
 		} else {
-
-			// Send to GUI from inside or outside ifs? What to do when both
-			// removed
 
 			if (attacker.soldierRank < defender.soldierRank) {
 
@@ -38,12 +44,16 @@ public class Combat {
 			} else if (attacker.soldierRank > defender.soldierRank) {
 
 				MainGame.gameBoard[attacker.x][attacker.y].piece = null;
+				
 
 			} else {
 
 				MainGame.gameBoard[attacker.x][attacker.y].piece = null;
 				MainGame.gameBoard[defender.x][defender.y].piece = null;
 			}
+		}
+		if (MainGame.gameBoard[defender.x][defender.y].piece != null){
+		MainGame.gameBoard[defender.x][defender.y].piece.visible = true;
 		}
 	}
 }
