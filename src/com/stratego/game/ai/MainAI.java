@@ -20,7 +20,22 @@ public class MainAI{
     //Calc closest piece
     return closestTile;
     public static void setBoard(){
-      
+      int frontRowY = 3;
+      int[] frontRank = {1,2,9,9,11,11,11,5,7,4};
+      for (int col = 0; col < 10; col++){
+        if (col ==0){
+          boolean[] filled = new boolean[10];
+          Arrays.fill(filled, false);
+        }
+        boolean filled = false;
+        while (filled == false){
+          int toFill = new Random().nextInt(10);
+          if (filled[toFill] == false){
+            //array of pieces to place place next one based on col
+            filled == true;
+          }
+        }
+      }
     }
   }
 }
