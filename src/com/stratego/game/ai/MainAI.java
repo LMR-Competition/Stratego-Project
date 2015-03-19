@@ -22,6 +22,8 @@ public class MainAI{
     public static void setBoard(){
       int frontRowY = 3;
       int[] frontRank = {1,2,9,9,11,11,11,5,7,4};
+      int[] backRanks = {3,3,4,4,5,5,5,6,6,6,6//
+      //frontrow
       for (int col = 0; col < 10; col++){
         if (col ==0){
           boolean[] filled = new boolean[10];
@@ -32,6 +34,22 @@ public class MainAI{
           int toFill = new Random().nextInt(10);
           if (filled[toFill] == false){
             preparePiece(col,frontRowY,frontrank[toFill], aiside);
+            filled[toFill] = true;
+            //array of pieces to place place next one based on col
+            filled == true;
+          }
+        }
+      }
+      for (int col = 0; col < 10; col++){
+        if (col ==0){
+          boolean[] filled = new boolean[10];
+          Arrays.fill(filled, false);
+        }
+        boolean filled = false;
+        while (filled == false){
+          int toFill = new Random().nextInt(10);
+          if (filled[toFill] == false){
+            preparePiece(col,2,frontrank[toFill], aiside);
             filled[toFill] = true;
             //array of pieces to place place next one based on col
             filled == true;
