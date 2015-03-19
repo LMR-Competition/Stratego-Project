@@ -31,6 +31,8 @@ public class MainAI{
         while (filled == false){
           int toFill = new Random().nextInt(10);
           if (filled[toFill] == false){
+            preparePiece(col,frontRowY,frontrank[toFill], aiside);
+            filled[toFill] = true;
             //array of pieces to place place next one based on col
             filled == true;
           }
