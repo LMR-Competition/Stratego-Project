@@ -15,6 +15,7 @@ import com.lutz.engine.resources.FontResource;
 import com.lutz.engine.ui.graphics.GraphicsEngine;
 import com.stratego.game.MainGame;
 import com.stratego.game.Movement;
+import com.stratego.game.Piece;
 import com.stratego.game.Tile;
 
 public class Screen {
@@ -24,7 +25,7 @@ public class Screen {
 	 * 
 	 * 0 - Main menu 1 - Instructions screen 2 - Game screen
 	 */
-	private static int screenModeValue = 2, mouseX = 0, mouseY = 0,
+	private static int screenModeValue = 0, mouseX = 0, mouseY = 0,
 			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1;
 
 	private static boolean pieceSelected = false;
@@ -52,6 +53,17 @@ public class Screen {
 			public void mouseClicked(MouseEvent e) {
 
 				switch (screenModeValue) {
+
+				case 0:
+
+					if (startSel) {
+
+					} else if (loadSel) {
+
+					} else if (quitSel) {
+
+						com.lutz.engine.ui.Screen.closeScreen();
+					}
 
 				case 2:
 
@@ -149,7 +161,7 @@ public class Screen {
 	}
 
 	private static final Color GOLD = new Color(255, 199, 0),
-			DARK_RED = new Color(150, 0, 0), DARK_RED_BORDER = new Color(120,
+			DARK_RED = new Color(150, 20, 0), DARK_RED_BORDER = new Color(120,
 					0, 0), PARCHMENT = new Color(255, 253, 150),
 			RED_BUTTON_TOP = new Color(219, 32, 32),
 			RED_BUTTON_BOTTOM = new Color(198, 22, 22), WOOD = new Color(60,
@@ -186,14 +198,19 @@ public class Screen {
 					- (g.getFontMetrics().stringWidth("stratego") / 2), 80 + (g
 					.getFontMetrics().getHeight() / 4));
 
-			// TODO: Make wooden pole next to banners
+			// WOOD POLE
+
+			g.setColor(WOOD);
+
+			g.fillRoundRect(0, engine.getHeight() / 2 - 60, 20,
+					engine.getHeight() / 2 + 80, 20, 20);
 
 			// QUIT
 
 			int xLeft = 20;
 			int xRight = 400;
-			int yTop = engine.getHeight() - 100;
-			int yBottom = engine.getHeight() - 40;
+			int yTop = engine.getHeight() - 200;
+			int yBottom = engine.getHeight() - 140;
 
 			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
 
@@ -209,68 +226,141 @@ public class Screen {
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 350, 400 },
-					new int[] { engine.getHeight() - 40,
-							engine.getHeight() - 70, engine.getHeight() - 70,
-							engine.getHeight() - 40 }, 4);
+					new int[] { engine.getHeight() - 140,
+							engine.getHeight() - 170, engine.getHeight() - 170,
+							engine.getHeight() - 140 }, 4);
 
-			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
-
-				quitSel = true;
+			if (quitSel) {
 
 				g.setColor(RED_BUTTON_TOP.brighter());
 
 			} else {
 
-				quitSel = false;
-
 				g.setColor(RED_BUTTON_TOP);
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 400, 350 },
-					new int[] { engine.getHeight() - 70,
-							engine.getHeight() - 100, engine.getHeight() - 100,
-							engine.getHeight() - 70 }, 4);
+					new int[] { engine.getHeight() - 170,
+							engine.getHeight() - 200, engine.getHeight() - 200,
+							engine.getHeight() - 170 }, 4);
+
+			Font buttonFont = new Font("Times New Roman", Font.PLAIN, 2);
+			buttonFont = buttonFont.deriveFont((float) engine
+					.percentageFontSize(buttonFont, 0.06f));
+			g.setFont(buttonFont);
+
+			if (quitSel) {
+
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker());
+
+			} else {
+
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
+			}
+
+			g.drawString("QUIT", 40, engine.getHeight() - 140
+					- (g.getFontMetrics().getHeight() / 4));
 
 			// LOAD
 
-			yTop = engine.getHeight() - 160;
-			yBottom = engine.getHeight() - 100;
+			yTop = engine.getHeight() - 310;
+			yBottom = engine.getHeight() - 250;
+
+			/*
+			 * if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
+			 * 
+			 * loadSel = true;
+			 * 
+			 * g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.brighter()));
+			 * 
+			 * } else {
+			 * 
+			 * loadSel = false;
+			 */
+
+			g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM));
+
+			g.fillPolygon(new int[] { 20, 20, 350, 400 },
+					new int[] { engine.getHeight() - 250,
+							engine.getHeight() - 280, engine.getHeight() - 280,
+							engine.getHeight() - 250 }, 4);
+
+			if (loadSel) {
+
+				g.setColor(makeBlackAndWhite(RED_BUTTON_TOP.brighter()));
+
+			} else {
+
+				g.setColor(makeBlackAndWhite(RED_BUTTON_TOP));
+			}
+
+			g.fillPolygon(new int[] { 20, 20, 400, 350 },
+					new int[] { engine.getHeight() - 280,
+							engine.getHeight() - 310, engine.getHeight() - 310,
+							engine.getHeight() - 280 }, 4);
+
+			if (loadSel) {
+
+				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.darker()
+						.darker()));
+
+			} else {
+
+				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.darker()
+						.darker().darker()));
+			}
+
+			g.drawString("LOAD", 40, engine.getHeight() - 250
+					- (g.getFontMetrics().getHeight() / 4));
+
+			// START
+
+			yTop = engine.getHeight() - 420;
+			yBottom = engine.getHeight() - 360;
 
 			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
 
-				loadSel = true;
+				startSel = true;
 
 				g.setColor(RED_BUTTON_BOTTOM.brighter());
 
 			} else {
 
-				loadSel = false;
+				startSel = false;
 
 				g.setColor(RED_BUTTON_BOTTOM);
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 350, 400 },
-					new int[] { engine.getHeight() - 100,
-							engine.getHeight() - 130, engine.getHeight() - 130,
-							engine.getHeight() - 100 }, 4);
+					new int[] { engine.getHeight() - 360,
+							engine.getHeight() - 390, engine.getHeight() - 390,
+							engine.getHeight() - 360 }, 4);
 
-			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY <= yBottom) {
-
-				quitSel = true;
+			if (startSel) {
 
 				g.setColor(RED_BUTTON_TOP.brighter());
 
 			} else {
 
-				quitSel = false;
-
 				g.setColor(RED_BUTTON_TOP);
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 400, 350 },
-					new int[] { engine.getHeight() - 130,
-							engine.getHeight() - 160, engine.getHeight() - 160,
-							engine.getHeight() - 130 }, 4);
+					new int[] { engine.getHeight() - 390,
+							engine.getHeight() - 420, engine.getHeight() - 420,
+							engine.getHeight() - 390 }, 4);
+
+			if (startSel) {
+
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker());
+
+			} else {
+
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
+			}
+
+			g.drawString("START", 40, engine.getHeight() - 360
+					- (g.getFontMetrics().getHeight() / 4));
 
 			break;
 
@@ -477,6 +567,30 @@ public class Screen {
 					g.fillRect(gXL + (gridSquareSize * x), gYT
 							+ (gridSquareSize * y), gridSquareSize + 1,
 							gridSquareSize + 1);
+
+					if (t.moveable) {
+
+						g.setColor(Color.GRAY);
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 0.5f));
+
+						g.drawRect(gXL + (gridSquareSize * x), gYT
+								+ (gridSquareSize * y), gridSquareSize + 1,
+								gridSquareSize + 1);
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 1f));
+					}
+
+					if (MainGame.gameBoard[x][y].piece != null) {
+
+						Piece p = MainGame.gameBoard[x][y].piece;
+
+						PieceDrawer.drawPiece(engine, p.soldierRank,
+								p.soldierSide, gXL + (gridSquareSize * x), gYT
+										+ (gridSquareSize * y), gridSquareSize,
+								gridSquareSize);
+					}
 				}
 			}
 
@@ -596,6 +710,8 @@ public class Screen {
 
 				// INSTRUCTIONS CLOSE
 
+				g.setFont(font);
+
 				String instClose = "CLOSE";
 
 				xL = (engine.getWidth() / 2)
@@ -637,5 +753,12 @@ public class Screen {
 
 			break;
 		}
+	}
+
+	private static Color makeBlackAndWhite(Color color) {
+
+		int cAv = (color.getRed() + color.getBlue() + color.getGreen()) / 3;
+
+		return new Color(cAv, cAv, cAv);
 	}
 }
