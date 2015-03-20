@@ -31,6 +31,27 @@ public class PieceDrawer {
 		g.setFont(f);
 
 		String pointStr = Integer.toString(pointValue);
+		
+		switch(pointValue){
+		
+		case 10:
+			
+			pointStr = "S";
+			
+			break;
+			
+		case 11:
+			
+			pointStr = "B";
+			
+			break;
+			
+		case 12:
+			
+			pointStr = "F";
+			
+			break;
+		}
 
 		g.drawString(pointStr, x + (width / 2)
 				- (g.getFontMetrics().stringWidth(pointStr) / 2), y
