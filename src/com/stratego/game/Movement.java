@@ -13,6 +13,8 @@
 package com.stratego.game;
 
 import java.awt.Point;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Movement {
 
@@ -44,7 +46,19 @@ public class Movement {
 		int x = selected.x;
 		int y = selected.y;
 		
-		return new Point[]{new Point(x-1, y-1), new Point(x-1, y), new Point(x-1, y+1), new Point(x, y-1), new Point(x, y+1), new Point(x+1, y+1), new Point(x+1, y), new Point(x+1, y-1)};
+		Point[] points = new Point[]{new Point(x-1, y), new Point(x, y-1), new Point(x, y+1), new Point(x+1, y)};
+
+		List<Point> pointList = new ArrayList<Point>();
+		
+		for(Point p : points){
+			
+			if(p.x >= 0 && p.x <= 9 && p.y >= 0 && p.y <= 0){
+				
+				pointList.add(p);
+			}
+		}
+		
+		return pointList.toArray(new Point[]{});
 	}
 
 	public static void placePiece(int x, int y) {
