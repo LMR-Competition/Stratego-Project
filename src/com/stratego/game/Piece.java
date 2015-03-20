@@ -7,9 +7,9 @@ public class Piece {
 	
 	public int soldierRank;
 
-	boolean visible = false;
+	public boolean visible = false;
 	
-	boolean justAttacked = false;
+	public boolean justAttacked = false, jAFlag = false;
 
 	public int x, y;
 	

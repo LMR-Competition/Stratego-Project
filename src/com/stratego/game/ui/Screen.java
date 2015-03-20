@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionListener;
 
 import com.lutz.engine.resources.FontResource;
 import com.lutz.engine.ui.graphics.GraphicsEngine;
+import com.stratego.game.Combat;
 import com.stratego.game.MainGame;
 import com.stratego.game.Movement;
 import com.stratego.game.Piece;
@@ -23,17 +24,34 @@ public class Screen {
 	/*
 	 * Screen value for shown screen
 	 * 
-	 * 0 - Main menu 1 - Instructions screen 2 - Game screen
+	 * 0 - Main menu 1 - ???? 2 - Game screen
 	 */
-	private static int screenModeValue = 0, mouseX = 0, mouseY = 0,
-			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1;
+	private static int screenModeValue = 2, mouseX = 0, mouseY = 0,
+			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1,
+			turnSide = 0, prevTurn = 1;
+
+	private static boolean hasMoved = false;
+
+	private static int startX = -1, startY = -1, movedX = -1, movedY = -1,
+			prevSX = -1, prevSY = -1, prevMX = -1, prevMY = -1;
 
 	private static boolean pieceSelected = false;
 
 	private static boolean startSel = false, loadSel = false, quitSel = false,
-			resetSel = false, undoSel = false, endTurnSel = false,
+			resetSel = false, saveSel = false, endTurnSel = false,
 			instructionsSel = false, mouseLockedToOverlay = false,
-			instructionsCloseSel = false, instructionsShown = false;
+			instructionsCloseSel = false, switchSel = false;
+
+	private static boolean instructionsShown = false,
+			betweenTurnsShown = false;
+
+	public static void startGame() {
+
+		turnSide = 0;
+		hasMoved = false;
+		pieceSelected = false;
+		screenModeValue = 2;
+	}
 
 	/**
 	 * Retrieves the grid x/y value where the mouse is located (0-9)<br>
@@ -71,9 +89,34 @@ public class Screen {
 
 						if (resetSel) {
 
-						} else if (undoSel) {
+						} else if (saveSel) {
 
 						} else if (endTurnSel) {
+
+							prevTurn = turnSide;
+							turnSide = 2;
+							pieceSelected = false;
+							mouseLockedToOverlay = true;
+							betweenTurnsShown = true;
+
+							for (int x = 0; x < 10; x++) {
+
+								for (int y = 0; y < 10; y++) {
+
+									if (MainGame.gameBoard[x][y].piece != null) {
+
+										if (MainGame.gameBoard[x][y].piece.jAFlag) {
+
+											MainGame.gameBoard[x][y].piece.jAFlag = false;
+											MainGame.gameBoard[x][y].piece.justAttacked = false;
+
+										} else if (MainGame.gameBoard[x][y].piece.justAttacked) {
+
+											MainGame.gameBoard[x][y].piece.jAFlag = true;
+										}
+									}
+								}
+							}
 
 						} else if (instructionsSel) {
 
@@ -82,12 +125,82 @@ public class Screen {
 
 						} else if (gridMouseX >= 0 && gridMouseY >= 0) {
 
-							if (MainGame.gameBoard[gridMouseX][gridMouseY].moveable
+							if (pieceSelected) {
+
+								if (MainGame.gameBoard[gridMouseX][gridMouseY].piece == null) {
+
+									if (Movement
+											.canMoveHere(
+													gridMouseX,
+													gridMouseY,
+													MainGame.gameBoard[selectX][selectY].piece,
+													hasMoved)) {
+
+										Movement.preparePiece(
+												gridMouseX,
+												gridMouseY,
+												MainGame.gameBoard[selectX][selectY].piece.soldierRank,
+												MainGame.gameBoard[selectX][selectY].piece.soldierSide);
+										MainGame.gameBoard[selectX][selectY].piece = null;
+
+										hasMoved = true;
+										startX = selectX;
+										startY = selectY;
+										movedX = gridMouseX;
+										movedY = gridMouseY;
+
+										pieceSelected = false;
+										selectX = -1;
+										selectY = -1;
+
+									} else {
+
+										pieceSelected = false;
+										selectX = -1;
+										selectY = -1;
+									}
+
+								} else if (MainGame.gameBoard[gridMouseX][gridMouseY].piece.soldierSide != turnSide) {
+
+									if (Movement
+											.canMoveHere(
+													gridMouseX,
+													gridMouseY,
+													MainGame.gameBoard[selectX][selectY].piece,
+													hasMoved)) {
+
+										Combat.engage(
+												MainGame.gameBoard[selectX][selectY].piece,
+												MainGame.gameBoard[gridMouseX][gridMouseY].piece);
+
+										hasMoved = true;
+										startX = selectX;
+										startY = selectY;
+										movedX = gridMouseX;
+										movedY = gridMouseY;
+
+										pieceSelected = false;
+										selectX = -1;
+										selectY = -1;
+
+									} else {
+
+										pieceSelected = false;
+										selectX = -1;
+										selectY = -1;
+									}
+								}
+
+							} else if (MainGame.gameBoard[gridMouseX][gridMouseY].moveable
 									&& MainGame.gameBoard[gridMouseX][gridMouseY].piece != null) {
 
-								pieceSelected = true;
-								selectX = gridMouseX;
-								selectY = gridMouseY;
+								if (MainGame.gameBoard[gridMouseX][gridMouseY].piece.soldierSide == turnSide) {
+
+									pieceSelected = true;
+									selectX = gridMouseX;
+									selectY = gridMouseY;
+
+								}
 							}
 						}
 
@@ -97,6 +210,28 @@ public class Screen {
 
 							mouseLockedToOverlay = false;
 							instructionsShown = false;
+						}
+
+					} else if (betweenTurnsShown) {
+
+						if (switchSel) {
+
+							if (prevTurn == 0) {
+
+								turnSide = 1;
+
+							} else {
+
+								turnSide = 0;
+							}
+
+							mouseLockedToOverlay = false;
+							betweenTurnsShown = false;
+							prevSX = startX;
+							prevSY = startY;
+							prevMX = movedX;
+							prevMY = movedY;
+							hasMoved = false;
 						}
 					}
 
@@ -465,37 +600,37 @@ public class Screen {
 					+ (g.getFontMetrics().stringWidth(reset) / 2) - 12, 20 + (g
 					.getFontMetrics().getHeight() / 4));
 
-			// UNDO MOVE
+			// SAVE GAME
 
-			String undo = "UNDO";
+			String save = "SAVE";
 
 			xL = xR + 4;
-			xR = xL + (g.getFontMetrics().stringWidth(undo)) + 40;
+			xR = xL + (g.getFontMetrics().stringWidth(save)) + 40;
 
 			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
 					&& !mouseLockedToOverlay) {
 
-				undoSel = true;
+				saveSel = true;
 
 				g.setColor(GOLD.brighter());
 
 			} else {
 
-				undoSel = false;
+				saveSel = false;
 
 				g.setColor(GOLD);
 			}
 
-			g.fillRect(xL, 2, g.getFontMetrics().stringWidth(undo) + 40, 34);
+			g.fillRect(xL, 2, g.getFontMetrics().stringWidth(save) + 40, 34);
 
 			g.setColor(g.getColor().darker());
 
-			g.drawRect(xL, 2, g.getFontMetrics().stringWidth(undo) + 40, 34);
+			g.drawRect(xL, 2, g.getFontMetrics().stringWidth(save) + 40, 34);
 
 			g.setColor(Color.BLACK);
 
-			g.drawString(undo, xL + (g.getFontMetrics().stringWidth(undo) / 2)
-					- 12, 20 + (g.getFontMetrics().getHeight() / 4));
+			g.drawString(save, xL + (g.getFontMetrics().stringWidth(save) / 2)
+					- 8, 20 + (g.getFontMetrics().getHeight() / 4));
 
 			// INSTRUCTIONS
 
@@ -582,6 +717,29 @@ public class Screen {
 								AlphaComposite.SRC_OVER, 1f));
 					}
 
+					if ((prevSX == x && prevSY == y)
+							|| (prevMX == x && prevMY == y)) {
+
+						g.setColor(GOLD);
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 0.6f));
+
+						g.fillRect(gXL + (gridSquareSize * x), gYT
+								+ (gridSquareSize * y), gridSquareSize,
+								gridSquareSize);
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 1f));
+
+						g.drawRect(gXL + (gridSquareSize * x), gYT
+								+ (gridSquareSize * y), gridSquareSize,
+								gridSquareSize);
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 1f));
+					}
+
 					if (MainGame.gameBoard[x][y].piece != null) {
 
 						Piece p = MainGame.gameBoard[x][y].piece;
@@ -589,7 +747,7 @@ public class Screen {
 						PieceDrawer.drawPiece(engine, p.soldierRank,
 								p.soldierSide, gXL + (gridSquareSize * x), gYT
 										+ (gridSquareSize * y), gridSquareSize,
-								gridSquareSize);
+								gridSquareSize, turnSide, x, y);
 					}
 				}
 			}
@@ -598,36 +756,42 @@ public class Screen {
 
 			if (pieceSelected) {
 
-				Point[] possible = Movement
-						.getMoveRange(MainGame.gameBoard[selectX][selectY].piece);
+				if (MainGame.gameBoard[selectX][selectY].piece != null) {
 
-				for (Point p : possible) {
+					Point[] possible = Movement.getMoveRange(
+							MainGame.gameBoard[selectX][selectY].piece,
+							hasMoved);
 
-					if (MainGame.gameBoard[p.x][p.y].piece == null
-							&& MainGame.gameBoard[p.x][p.y].moveable) {
+					for (Point p : possible) {
 
-						g.setColor(Color.GRAY);
+						if (MainGame.gameBoard[p.x][p.y].piece == null
+								&& MainGame.gameBoard[p.x][p.y].moveable) {
 
-					} else {
+							g.setColor(Color.GRAY);
 
-						g.setColor(Color.RED);
+						} else {
+
+							g.setColor(Color.RED);
+						}
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 0.3f));
+
+						g.fillRect(gXL + (gridSquareSize * p.x), gYT
+								+ (gridSquareSize * p.y), gridSquareSize,
+								gridSquareSize);
+
+						g.setComposite(AlphaComposite.getInstance(
+								AlphaComposite.SRC_OVER, 0.6f));
+
+						g.drawRect(gXL + (gridSquareSize * p.x), gYT
+								+ (gridSquareSize * p.y), gridSquareSize,
+								gridSquareSize);
 					}
-
-					g.setComposite(AlphaComposite.getInstance(
-							AlphaComposite.SRC_OVER, 0.3f));
-
-					g.fillRect(gXL + (gridSquareSize * p.x), gYT
-							+ (gridSquareSize * p.y), gridSquareSize,
-							gridSquareSize);
-
-					g.setComposite(AlphaComposite.getInstance(
-							AlphaComposite.SRC_OVER, 0.6f));
-
-					g.drawRect(gXL + (gridSquareSize * p.x), gYT
-							+ (gridSquareSize * p.y), gridSquareSize,
-							gridSquareSize);
 				}
 			}
+
+			// MOUSE BOXES
 
 			if (mX >= gXL && mX <= gXR && mY >= gYT && mY <= gYB
 					&& !mouseLockedToOverlay) {
@@ -665,17 +829,10 @@ public class Screen {
 			}
 
 			if (gridMouseX >= 0 && gridMouseX < 10 && gridMouseY >= 0
-					&& gridMouseY < 10) {
+					&& gridMouseY < 10
+					&& MainGame.gameBoard[gridMouseX][gridMouseY].moveable) {
 
-				if ((MainGame.gameBoard[gridMouseX][gridMouseY].moveable
-						&& (pieceSelected && (MainGame.gameBoard[gridMouseX][gridMouseY].piece == null)) || !pieceSelected)) {
-
-					g.setColor(Color.BLACK);
-
-				} else {
-
-					g.setColor(Color.RED);
-				}
+				g.setColor(Color.BLACK);
 
 				g.setComposite(AlphaComposite.getInstance(
 						AlphaComposite.SRC_OVER, 0.8f));
@@ -717,12 +874,11 @@ public class Screen {
 				xL = (engine.getWidth() / 2)
 						- (g.getFontMetrics().stringWidth(instClose) - 20);
 				xR = (engine.getWidth() / 2)
-						+ (g.getFontMetrics().stringWidth(instClose) + 20);
+						+ (g.getFontMetrics().stringWidth(instClose) - 7);
 				yT = (engine.getHeight() / 2) + (instHeight / 2) - 42;
 				yB = yT + 34;
 
-				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
-						&& instructionsShown) {
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
 
 					instructionsCloseSel = true;
 
@@ -748,6 +904,68 @@ public class Screen {
 				g.drawString(instClose,
 						xL + 5 + (g.getFontMetrics().stringWidth(instClose))
 								- 54, yT + 17
+								+ (g.getFontMetrics().getHeight() / 4));
+			}
+
+			// BETWEEN TURNS
+
+			if (betweenTurnsShown) {
+
+				g.setColor(Color.BLACK);
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.6f));
+				g.fillRect(0, 0, engine.getWidth(), engine.getHeight());
+
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 1f));
+
+				g.setColor(PARCHMENT);
+				int instHeight = engine.getHeight() - 100;
+				g.fillRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+						instHeight, instHeight);
+				g.setColor(PARCHMENT.darker());
+				g.drawRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+						instHeight, instHeight);
+
+				// BETWEEN TURNS CONTINUE
+
+				g.setFont(font);
+
+				String instClose = "CONTINUE";
+
+				xL = (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(instClose) - 20);
+				xR = (engine.getWidth() / 2)
+						+ (g.getFontMetrics().stringWidth(instClose) - 7);
+				yT = (engine.getHeight() / 2) + (instHeight / 2) - 42;
+				yB = yT + 34;
+
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+
+					switchSel = true;
+
+					g.setColor(GOLD.brighter());
+
+				} else {
+
+					switchSel = false;
+
+					g.setColor(GOLD);
+				}
+
+				g.fillRect(xL, yT,
+						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+
+				g.setColor(g.getColor().darker());
+
+				g.drawRect(xL, yT,
+						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+
+				g.setColor(Color.BLACK);
+
+				g.drawString(instClose,
+						xL + 5 + (g.getFontMetrics().stringWidth(instClose))
+								- 94, yT + 17
 								+ (g.getFontMetrics().getHeight() / 4));
 			}
 

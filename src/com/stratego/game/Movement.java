@@ -25,8 +25,7 @@ public class Movement {
 
 	public static void preparePiece(int x, int y, int rank, int side) {
 
-		MainGame.soldiers[PPnum] = new Piece(x, y, rank, side);
-		MainGame.gameBoard[x][y].piece = MainGame.soldiers[PPnum];
+		MainGame.gameBoard[x][y].piece = new Piece(x, y, rank, side);
 		PPnum++;
 	}
 
@@ -41,7 +40,12 @@ public class Movement {
 		// }
 	}
 
-	public static Point[] getMoveRange(Piece selected) {
+	public static Point[] getMoveRange(Piece selected, boolean hasMoved) {
+
+		if (hasMoved) {
+
+			return new Point[] {};
+		}
 
 		int x = selected.x;
 		int y = selected.y;
@@ -52,19 +56,19 @@ public class Movement {
 
 		case 9:
 
-			boolean isOnEnemy = false;
+			boolean isOnEnemyXM = false;
 
 			for (int lX = x; lX >= 0 && lX < 10; lX--) {
 
 				if (lX != x
-						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide && !isOnEnemy))
-						&& MainGame.gameBoard[lX][y].moveable) {
+						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide))
+						&& MainGame.gameBoard[lX][y].moveable && !isOnEnemyXM) {
 
 					if (MainGame.gameBoard[lX][y].piece != null) {
 
 						if (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide) {
 
-							isOnEnemy = true;
+							isOnEnemyXM = true;
 						}
 					}
 
@@ -76,19 +80,19 @@ public class Movement {
 				}
 			}
 
-			isOnEnemy = false;
+			boolean isOnEnemyXP = false;
 
 			for (int lX = x; lX >= 0 && lX < 10; lX++) {
 
 				if (lX != x
-						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide && !isOnEnemy))
-						&& MainGame.gameBoard[lX][y].moveable) {
+						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide))
+						&& MainGame.gameBoard[lX][y].moveable && !isOnEnemyXP) {
 
 					if (MainGame.gameBoard[lX][y].piece != null) {
 
 						if (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide) {
 
-							isOnEnemy = true;
+							isOnEnemyXP = true;
 						}
 					}
 
@@ -100,19 +104,19 @@ public class Movement {
 				}
 			}
 
-			isOnEnemy = false;
+			boolean isOnEnemyYM = false;
 
 			for (int lY = y; lY >= 0 && lY < 10; lY--) {
 
 				if (lY != y
-						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide && !isOnEnemy))
-						&& MainGame.gameBoard[x][lY].moveable) {
+						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide))
+						&& MainGame.gameBoard[x][lY].moveable && !isOnEnemyYM) {
 
 					if (MainGame.gameBoard[x][lY].piece != null) {
 
 						if (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide) {
 
-							isOnEnemy = true;
+							isOnEnemyYM = true;
 						}
 					}
 
@@ -124,19 +128,19 @@ public class Movement {
 				}
 			}
 
-			isOnEnemy = false;
+			boolean isOnEnemyYP = false;
 
 			for (int lY = y; lY >= 0 && lY < 10; lY++) {
 
 				if (lY != y
-						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide && !isOnEnemy))
-						&& MainGame.gameBoard[x][lY].moveable) {
+						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide && !isOnEnemyYM))
+						&& MainGame.gameBoard[x][lY].moveable && !isOnEnemyYP) {
 
 					if (MainGame.gameBoard[x][lY].piece != null) {
 
 						if (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide) {
 
-							isOnEnemy = true;
+							isOnEnemyYP = true;
 						}
 					}
 
@@ -166,7 +170,12 @@ public class Movement {
 
 			for (Point p : points) {
 
-				if (p.x >= 0 && p.x <= 9 && p.y >= 0 && p.y <= 9) {
+				if (p.x >= 0
+						&& p.x <= 9
+						&& p.y >= 0
+						&& p.y <= 9
+						&& MainGame.gameBoard[p.x][p.y].moveable
+						&& (MainGame.gameBoard[p.x][p.y].piece == null || MainGame.gameBoard[p.x][p.y].piece.soldierSide != selected.soldierSide)) {
 
 					pointList.add(p);
 				}
@@ -176,6 +185,21 @@ public class Movement {
 		}
 
 		return pointList.toArray(new Point[] {});
+	}
+
+	public static boolean canMoveHere(int x, int y, Piece piece, boolean hasMoved) {
+
+		Point[] points = getMoveRange(piece, hasMoved);
+
+		for (Point p : points) {
+
+			if (p.x == x && p.y == y) {
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static void placePiece(int x, int y) {

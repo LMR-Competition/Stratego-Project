@@ -11,14 +11,12 @@ import com.lutz.engine.settings.loading.GameSetting;
 import com.lutz.engine.settings.loading.SettingType;
 import com.lutz.engine.ui.Screen;
 import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
+import com.stratego.game.ai.MainAI;
 
 public class MainGame {
+	
 	// TODO: make Setup Function and call for wells and board
-	/**
-	 * Currently not used beyond creation, work done through the piece stored by
-	 * gameBoard. Possible to remove this array?
-	 */
-	public static Piece[] soldiers = new Piece[80];
+
 	public static Tile[][] gameBoard = new Tile[10][10];
 
 	@GameResource(ResourceType.GAME_ICON)
@@ -34,7 +32,6 @@ public class MainGame {
 
 	@GameAction(ActionType.INITIALIZE)
 	public static void initialize() {
-		MainAI.setPlayerBoard();
 
 		for (int x = 0; x < 10; x++) {
 
@@ -43,6 +40,8 @@ public class MainGame {
 				gameBoard[x][y] = new Tile(x, y);
 			}
 		}
+		
+		//MainAI.setPlayerBoard();
 	}
 
 	@GameAction(ActionType.UI_PRESHOW)
