@@ -51,51 +51,99 @@ public class Movement {
 		switch (selected.soldierRank) {
 
 		case 9:
-			
-			for(int lX = x; lX >= 0 && lX < 10; lX--){
-				
-				if(lX != x && MainGame.gameBoard[lX][y].piece == null && MainGame.gameBoard[lX][y].moveable){
-					
+
+			boolean isOnEnemy = false;
+
+			for (int lX = x; lX >= 0 && lX < 10; lX--) {
+
+				if (lX != x
+						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide && !isOnEnemy))
+						&& MainGame.gameBoard[lX][y].moveable) {
+
+					if (MainGame.gameBoard[lX][y].piece != null) {
+
+						if (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide) {
+
+							isOnEnemy = true;
+						}
+					}
+
 					pointList.add(new Point(lX, y));
-					
-				}else if(lX != x){
-					
+
+				} else if (lX != x) {
+
 					break;
 				}
 			}
 
-			for(int lX = x; lX >= 0 && lX < 10; lX++){
-				
-				if(lX != x && MainGame.gameBoard[lX][y].piece == null && MainGame.gameBoard[lX][y].moveable){
-					
+			isOnEnemy = false;
+
+			for (int lX = x; lX >= 0 && lX < 10; lX++) {
+
+				if (lX != x
+						&& (MainGame.gameBoard[lX][y].piece == null || (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide && !isOnEnemy))
+						&& MainGame.gameBoard[lX][y].moveable) {
+
+					if (MainGame.gameBoard[lX][y].piece != null) {
+
+						if (MainGame.gameBoard[lX][y].piece.soldierSide != selected.soldierSide) {
+
+							isOnEnemy = true;
+						}
+					}
+
 					pointList.add(new Point(lX, y));
-					
-				}else if(lX != x){
-					
+
+				} else if (lX != x) {
+
 					break;
 				}
 			}
 
-			for(int lY = y; lY >= 0 && lY < 10; lY--){
-				
-				if(lY != y && MainGame.gameBoard[x][lY].piece == null && MainGame.gameBoard[x][lY].moveable){
-					
+			isOnEnemy = false;
+
+			for (int lY = y; lY >= 0 && lY < 10; lY--) {
+
+				if (lY != y
+						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide && !isOnEnemy))
+						&& MainGame.gameBoard[x][lY].moveable) {
+
+					if (MainGame.gameBoard[x][lY].piece != null) {
+
+						if (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide) {
+
+							isOnEnemy = true;
+						}
+					}
+
 					pointList.add(new Point(x, lY));
-					
-				}else if(lY != y){
-					
+
+				} else if (lY != y) {
+
 					break;
 				}
 			}
-			
-			for(int lY = y; lY >= 0 && lY < 10; lY++){
-				
-				if(lY != y && MainGame.gameBoard[x][lY].piece == null && MainGame.gameBoard[x][lY].moveable){
-					
+
+			isOnEnemy = false;
+
+			for (int lY = y; lY >= 0 && lY < 10; lY++) {
+
+				if (lY != y
+						&& (MainGame.gameBoard[x][lY].piece == null || (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide && !isOnEnemy))
+						&& MainGame.gameBoard[x][lY].moveable) {
+
+					if (MainGame.gameBoard[x][lY].piece != null) {
+
+						if (MainGame.gameBoard[x][lY].piece.soldierSide != selected.soldierSide) {
+
+							isOnEnemy = true;
+						}
+					}
+
 					pointList.add(new Point(x, lY));
-					
-				}else if(lY != y){
-					
+
+				} else if (lY != y) {
+
 					break;
 				}
 			}
