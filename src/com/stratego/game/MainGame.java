@@ -34,6 +34,7 @@ public class MainGame {
 
 	@GameAction(ActionType.INITIALIZE)
 	public static void initialize() {
+		MainAI.setPlayerBoard();
 
 		for (int x = 0; x < 10; x++) {
 
@@ -46,9 +47,8 @@ public class MainGame {
 
 	@GameAction(ActionType.UI_PRESHOW)
 	public static void uiPreShow() {
-
-		MainGame.gameBoard[1][3].piece = new Piece(1, 3, 1, 1);
-		MainGame.gameBoard[2][3].piece = new Piece(2, 3, 1, 1);
+		MainAI.setBoard();
+		MainAI.setPlayerBoard();
 	}
 
 	@GameAction(ActionType.UI_POSTSHOW)
