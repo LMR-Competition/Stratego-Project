@@ -3,6 +3,8 @@ package com.stratego.game.ai;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.stratego.game.MainGame;
+import com.stratego.game.Movement;
 import com.stratego.game.Tile;
 
 public class MainAI{
@@ -22,43 +24,50 @@ public class MainAI{
     }
     //Calc closest piece
     return closestTile;
+}
     	public static void setBoard(){
     		int frontRowY = 3;
       		int[] frontRank = {1,2,9,9,11,11,11,5,7,4};
-      		int[] backRanks = {3,3,4,4,5,5,5,6,6,6,6//
+      		int[] backRanks = {3,3,4,4,5,5,5,6,6,6,6};//
     		//frontrow
-      		for (int col = 0; col < 10; col++){
-    	  		if (col ==0){
         			boolean[] filled = new boolean[10];
+      		
+      		for (int col = 0; col < 10; col++){
+      			
+    	  		if (col ==0){
           			Arrays.fill(filled, false);
         		}
-        		boolean filled = false;
-        		while (filled == false){
+    	  		
+        		boolean thisFilled = false;
+        		while (thisFilled == false){
         			int toFill = new Random().nextInt(10);
           			if (filled[toFill] == false){
-        	  			preparePiece(col,frontRowY,frontrank[toFill], aiside);
+        	  			Movement.preparePiece(col,frontRowY,frontRank[toFill], aiSide);
             			filled[toFill] = true;
             			//array of pieces to place place next one based on col
-            			filled == true;
+            			thisFilled = true;
           			}
         		}
       		}
+      		
+			filled = new boolean[10];
+
       		for (int col = 0; col < 10; col++){
+      			
     	  		if (col ==0){
-        			boolean[] filled = new boolean[10];
           			Arrays.fill(filled, false);
         		}
-        		boolean filled = false;
-        		while (filled == false){
+        		boolean thisFilled = false;
+        		while (thisFilled == false){
         			int toFill = new Random().nextInt(10);
           			if (filled[toFill] == false){
-        	  			preparePiece(col,2,frontrank[toFill], aiside);
+        	  			Movement.preparePiece(col,2,frontRank[toFill], aiSide);
         	  			filled[toFill] = true;
             			//array of pieces to place place next one based on col
-            			filled == true;
+            			thisFilled = true;
           			}
         		}
       		}
-      	}
-    }
-}
+      		}
+        	
+    	}
