@@ -1,64 +1,153 @@
+//Preferably PPnum is used to end setup well function when it reaches 79.
+/*
+ NEEDS:
+ if(MOUSE REALEASED ON SQUARE WHILE HOLDING GHOST FROM WELL){
+ PreparePiece(X OF SQUARE,Y OF SQUARE, RANK, SIDE);   //Square over being the square the mouse or piece or piece is over, which is better interface? 
+ }
+ if (PIECE CLICKED ON){
+ GatherPiece(X OF HOME, Y OF HOME);
+ }
+ if (MOUSE RELEASED WHILE HeldPiece is not null && MOUSE OVER A SQUARE){
+ PlacePiece(X OF SQUARE OVER, Y OF SQUARE OVER);   //Square over being the square the mouse or piece or piece is over, which is better interface? 
+ }*/
 package com.stratego.game;
 
-import java.awt.Image;
+import java.awt.Point;
+import java.util.List;
+import java.util.ArrayList;
 
-import com.lutz.engine.game.ActionType;
-import com.lutz.engine.game.GameAction;
-import com.lutz.engine.resources.ImageResource;
-import com.lutz.engine.resources.loading.GameResource;
-import com.lutz.engine.resources.loading.ResourceType;
-import com.lutz.engine.settings.loading.GameSetting;
-import com.lutz.engine.settings.loading.SettingType;
-import com.lutz.engine.ui.Screen;
-import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
-import com.stratego.game.ai.MainAI;
+public class Movement {
 
-public class MainGame {
-	// TODO: make Setup Function and call for wells and board
-	/**
-	 * Currently not used beyond creation, work done through the piece stored by
-	 * gameBoard. Possible to remove this array?
-	 */
-	public static Piece[] soldiers = new Piece[80];
-	public static Tile[][] gameBoard = new Tile[10][10];
+	public static Piece heldPiece = null;
 
-	@GameResource(ResourceType.GAME_ICON)
-	public static Image icon = ImageResource.getExternalImage(
-			"resources/images/icon.png").getImage();
+	/** Counter for piece number during generation */
+	public static int PPnum = 0;
 
-	@GameSetting(SettingType.SUPPORTED_ASPECT_RATIOS)
-	public static AspectRatio[] aspectRatios = new AspectRatio[] { new AspectRatio(
-			16, 9) };
+	public static void preparePiece(int x, int y, int rank, int side) {
 
-	@GameSetting(SettingType.WINDOW_TITLE)
-	public static String windowTitle = "Stratego";
+		MainGame.soldiers[PPnum] = new Piece(x, y, rank, side);
+		MainGame.gameBoard[x][y].piece = MainGame.soldiers[PPnum];
+		PPnum++;
+	}
 
-	@GameAction(ActionType.INITIALIZE)
-	public static void initialize() {
+	// ?? - This doesn't work
+	public static void gatherPiece(int x, int y) {
 
-		for (int x = 0; x < 10; x++) {
+		// if (MainGame.soldiers[MainGame.gameBoard[x][y].piece.].rank<=10){
+		// //no soldiers supposed to be here?
+		// heldPiece = gameBoard[x][y].piece;
+		// } else {
+		// //play error noise?
+		// }
+	}
 
-			for (int y = 0; y < 10; y++) {
+	public static Point[] getMoveRange(Piece selected) {
 
-				gameBoard[x][y] = new Tile(x, y);
+		int x = selected.x;
+		int y = selected.y;
+
+		List<Point> pointList = new ArrayList<Point>();
+
+		switch (selected.soldierRank) {
+
+		case 9:
+			
+			for(int lX = x; lX >= 0 && lX < 10; lX--){
+				
+				if(lX != x && MainGame.gameBoard[lX][y].piece == null && MainGame.gameBoard[lX][y].moveable){
+					
+					pointList.add(new Point(lX, y));
+					
+				}else if(lX != x){
+					
+					break;
+				}
 			}
+
+			for(int lX = x; lX >= 0 && lX < 10; lX++){
+				
+				if(lX != x && MainGame.gameBoard[lX][y].piece == null && MainGame.gameBoard[lX][y].moveable){
+					
+					pointList.add(new Point(lX, y));
+					
+				}else if(lX != x){
+					
+					break;
+				}
+			}
+
+			for(int lY = y; lY >= 0 && lY < 10; lY--){
+				
+				if(lY != y && MainGame.gameBoard[x][lY].piece == null && MainGame.gameBoard[x][lY].moveable){
+					
+					pointList.add(new Point(x, lY));
+					
+				}else if(lY != y){
+					
+					break;
+				}
+			}
+			
+			for(int lY = y; lY >= 0 && lY < 10; lY++){
+				
+				if(lY != y && MainGame.gameBoard[x][lY].piece == null && MainGame.gameBoard[x][lY].moveable){
+					
+					pointList.add(new Point(x, lY));
+					
+				}else if(lY != y){
+					
+					break;
+				}
+			}
+
+			break;
+
+		case 11:
+
+			break;
+
+		case 12:
+
+			break;
+
+		default:
+
+			Point[] points = new Point[] { new Point(x - 1, y),
+					new Point(x, y - 1), new Point(x, y + 1),
+					new Point(x + 1, y) };
+
+			for (Point p : points) {
+
+				if (p.x >= 0 && p.x <= 9 && p.y >= 0 && p.y <= 9) {
+
+					pointList.add(p);
+				}
+			}
+
+			break;
 		}
+
+		return pointList.toArray(new Point[] {});
 	}
 
-	@GameAction(ActionType.UI_PRESHOW)
-	public static void uiPreShow() {
+	public static void placePiece(int x, int y) {
 
-		MainAI.setBoard();
-		MainGame.gameBoard[5][8].piece = new Piece(5, 8, 9, 1);
-	}
+		// Moveable Destination?
+		if ((heldPiece.x == x && heldPiece.y == y)
+				|| 1 < Math.abs(heldPiece.x - x)
+				|| 1 < Math.abs(heldPiece.y - y)) {
 
-	@GameAction(ActionType.UI_POSTSHOW)
-	public static void uiPostShow() {
+			// error noise?
 
-		Screen.startTick();
-	}
+		} else if (MainGame.gameBoard[x][y].piece != null) {
 
-	@GameAction(ActionType.CLOSE)
-	public static void close() {
+			Combat.engage(heldPiece, MainGame.gameBoard[x][y].piece);
+
+		} else {
+
+			MainGame.gameBoard[x][y].piece = heldPiece;
+			MainGame.gameBoard[heldPiece.x][heldPiece.y].piece = null;
+		}
+		heldPiece = null;
 	}
 }
