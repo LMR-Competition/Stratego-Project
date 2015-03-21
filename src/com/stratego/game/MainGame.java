@@ -2,6 +2,7 @@ package com.stratego.game;
 
 import java.awt.Image;
 
+import com.lutz.advlogging.Logger;
 import com.lutz.engine.game.ActionType;
 import com.lutz.engine.game.GameAction;
 import com.lutz.engine.resources.ImageResource;
@@ -16,7 +17,7 @@ import com.stratego.game.ai.MainAI;
 public class MainGame {
 	
 	// TODO: make Setup Function and call for wells and board
-
+	
 	public static Tile[][] gameBoard = new Tile[10][10];
 
 	@GameResource(ResourceType.GAME_ICON)

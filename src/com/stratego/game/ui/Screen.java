@@ -10,6 +10,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.lutz.engine.resources.FontResource;
 import com.lutz.engine.ui.graphics.GraphicsEngine;
@@ -18,6 +20,7 @@ import com.stratego.game.MainGame;
 import com.stratego.game.Movement;
 import com.stratego.game.Piece;
 import com.stratego.game.Tile;
+import com.stratego.game.saves.SaveManager;
 
 public class Screen {
 
@@ -26,7 +29,7 @@ public class Screen {
 	 * 
 	 * 0 - Main menu 1 - ???? 2 - Game screen
 	 */
-	private static int screenModeValue = 2, mouseX = 0, mouseY = 0,
+	private static int screenModeValue = 0, mouseX = 0, mouseY = 0,
 			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1,
 			turnSide = 0, prevTurn = 1;
 
@@ -38,7 +41,7 @@ public class Screen {
 	private static boolean pieceSelected = false;
 
 	private static boolean startSel = false, loadSel = false, quitSel = false,
-			resetSel = false, saveSel = false, endTurnSel = false,
+			newSel = false, saveSel = false, endTurnSel = false,
 			instructionsSel = false, mouseLockedToOverlay = false,
 			instructionsCloseSel = false, switchSel = false;
 
@@ -51,6 +54,30 @@ public class Screen {
 		hasMoved = false;
 		pieceSelected = false;
 		screenModeValue = 2;
+	}
+
+	public static void clearGame() {
+
+		for (Tile[] t1 : MainGame.gameBoard) {
+
+			for (Tile t2 : t1) {
+
+				t2.piece = null;
+			}
+		}
+	}
+
+	public static void setupSavegame(Piece[] pieces, int turn, boolean hasMoved) {
+
+		clearGame();
+
+		for (Piece p : pieces) {
+
+			MainGame.gameBoard[p.x][p.y].piece = p;
+		}
+
+		Screen.turnSide = turn;
+		Screen.hasMoved = hasMoved;
 	}
 
 	/**
@@ -78,6 +105,9 @@ public class Screen {
 
 					} else if (loadSel) {
 
+						SaveManager.loadGame();
+						screenModeValue = 2;
+
 					} else if (quitSel) {
 
 						com.lutz.engine.ui.Screen.closeScreen();
@@ -87,9 +117,26 @@ public class Screen {
 
 					if (!mouseLockedToOverlay) {
 
-						if (resetSel) {
+						if (newSel) {
 
 						} else if (saveSel) {
+
+							List<Piece> pieces = new ArrayList<Piece>();
+
+							for (Tile[] t1 : MainGame.gameBoard) {
+
+								for (Tile t2 : t1) {
+
+									if (t2.piece != null) {
+
+										pieces.add(t2.piece);
+									}
+								}
+							}
+
+							SaveManager.saveGame(
+									pieces.toArray(new Piece[] {}), turnSide,
+									hasMoved);
 
 						} else if (endTurnSel) {
 
@@ -189,6 +236,12 @@ public class Screen {
 										selectX = -1;
 										selectY = -1;
 									}
+
+								} else if (MainGame.gameBoard[gridMouseX][gridMouseY].piece.soldierSide == turnSide) {
+
+									pieceSelected = true;
+									selectX = gridMouseX;
+									selectY = gridMouseY;
 								}
 
 							} else if (MainGame.gameBoard[gridMouseX][gridMouseY].moveable
@@ -401,19 +454,18 @@ public class Screen {
 			yTop = engine.getHeight() - 310;
 			yBottom = engine.getHeight() - 250;
 
-			/*
-			 * if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
-			 * 
-			 * loadSel = true;
-			 * 
-			 * g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.brighter()));
-			 * 
-			 * } else {
-			 * 
-			 * loadSel = false;
-			 */
+			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
 
-			g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM));
+				loadSel = true;
+
+				g.setColor(RED_BUTTON_BOTTOM.brighter());
+
+			} else {
+
+				loadSel = false;
+
+				g.setColor(RED_BUTTON_BOTTOM);
+			}
 
 			g.fillPolygon(new int[] { 20, 20, 350, 400 },
 					new int[] { engine.getHeight() - 250,
@@ -422,11 +474,11 @@ public class Screen {
 
 			if (loadSel) {
 
-				g.setColor(makeBlackAndWhite(RED_BUTTON_TOP.brighter()));
+				g.setColor(RED_BUTTON_TOP.brighter());
 
 			} else {
 
-				g.setColor(makeBlackAndWhite(RED_BUTTON_TOP));
+				g.setColor(RED_BUTTON_TOP);
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 400, 350 },
@@ -436,13 +488,11 @@ public class Screen {
 
 			if (loadSel) {
 
-				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.darker()
-						.darker()));
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker());
 
 			} else {
 
-				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.darker()
-						.darker().darker()));
+				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
 			}
 
 			g.drawString("LOAD", 40, engine.getHeight() - 250
@@ -569,40 +619,40 @@ public class Screen {
 
 			// RESET
 
-			String reset = "RESET";
+			String newGame = "NEW GAME";
 
 			xL = 4;
-			xR = xL + (g.getFontMetrics().stringWidth(reset)) + 40;
+			xR = xL + (g.getFontMetrics().stringWidth(newGame)) + 40;
 
 			if (mX >= xL && mX <= xR && mY >= yT && mY <= yB
 					&& !mouseLockedToOverlay) {
 
-				resetSel = true;
+				newSel = true;
 
 				g.setColor(GOLD.brighter());
 
 			} else {
 
-				resetSel = false;
+				newSel = false;
 
 				g.setColor(GOLD);
 			}
 
-			g.fillRect(xL, 2, g.getFontMetrics().stringWidth(reset) + 40, 34);
+			g.fillRect(xL, 2, g.getFontMetrics().stringWidth(newGame) + 40, 34);
 
 			g.setColor(g.getColor().darker());
 
-			g.drawRect(xL, 2, g.getFontMetrics().stringWidth(reset) + 40, 34);
+			g.drawRect(xL, 2, g.getFontMetrics().stringWidth(newGame) + 40, 34);
 
 			g.setColor(Color.BLACK);
 
-			g.drawString(reset, xL
-					+ (g.getFontMetrics().stringWidth(reset) / 2) - 12, 20 + (g
-					.getFontMetrics().getHeight() / 4));
+			g.drawString(newGame, xL
+					+ (g.getFontMetrics().stringWidth(newGame) / 2) - 38,
+					20 + (g.getFontMetrics().getHeight() / 4));
 
 			// SAVE GAME
 
-			String save = "SAVE";
+			String save = "SAVE GAME";
 
 			xL = xR + 4;
 			xR = xL + (g.getFontMetrics().stringWidth(save)) + 40;
@@ -630,7 +680,7 @@ public class Screen {
 			g.setColor(Color.BLACK);
 
 			g.drawString(save, xL + (g.getFontMetrics().stringWidth(save) / 2)
-					- 8, 20 + (g.getFontMetrics().getHeight() / 4));
+					- 42, 20 + (g.getFontMetrics().getHeight() / 4));
 
 			// INSTRUCTIONS
 
@@ -858,11 +908,13 @@ public class Screen {
 						AlphaComposite.SRC_OVER, 1f));
 
 				g.setColor(PARCHMENT);
-				int instHeight = engine.getHeight() - 100;
-				g.fillRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+				int instHeight = 600;
+				g.fillRect((engine.getWidth() / 2) - (instHeight / 2),
+						(engine.getHeight() / 2) - (instHeight / 2),
 						instHeight, instHeight);
 				g.setColor(PARCHMENT.darker());
-				g.drawRect((engine.getWidth() / 2) - (instHeight / 2), 50,
+				g.drawRect((engine.getWidth() / 2) - (instHeight / 2),
+						(engine.getHeight() / 2) - (instHeight / 2),
 						instHeight, instHeight);
 
 				// INSTRUCTIONS CLOSE
@@ -920,24 +972,40 @@ public class Screen {
 						AlphaComposite.SRC_OVER, 1f));
 
 				g.setColor(PARCHMENT);
-				int instHeight = engine.getHeight() - 100;
-				g.fillRect((engine.getWidth() / 2) - (instHeight / 2), 50,
-						instHeight, instHeight);
+				int switchWidth = 700;
+				int switchHeight = 200;
+				g.fillRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
 				g.setColor(PARCHMENT.darker());
-				g.drawRect((engine.getWidth() / 2) - (instHeight / 2), 50,
-						instHeight, instHeight);
+				g.drawRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
+
+				Font messageFont = new Font("Times New Roman", Font.PLAIN, 2);
+				messageFont = messageFont.deriveFont((float) engine
+						.percentageFontSize(messageFont, 0.06f));
+				g.setFont(messageFont);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+
+				String switchMessage = "Switch players...";
+				g.drawString(switchMessage, (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(switchMessage) / 2),
+						(engine.getHeight() / 2)
+								- (g.getFontMetrics().getHeight() / 4));
 
 				// BETWEEN TURNS CONTINUE
 
 				g.setFont(font);
 
-				String instClose = "CONTINUE";
+				String switchClose = "CONTINUE";
 
 				xL = (engine.getWidth() / 2)
-						- (g.getFontMetrics().stringWidth(instClose) - 20);
+						- (g.getFontMetrics().stringWidth(switchClose) - 20);
 				xR = (engine.getWidth() / 2)
-						+ (g.getFontMetrics().stringWidth(instClose) - 7);
-				yT = (engine.getHeight() / 2) + (instHeight / 2) - 42;
+						+ (g.getFontMetrics().stringWidth(switchClose) - 7);
+				yT = (engine.getHeight() / 2) + (switchHeight / 2) - 42;
 				yB = yT + 34;
 
 				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
@@ -954,17 +1022,17 @@ public class Screen {
 				}
 
 				g.fillRect(xL, yT,
-						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+						g.getFontMetrics().stringWidth(switchClose) + 40, 34);
 
 				g.setColor(g.getColor().darker());
 
 				g.drawRect(xL, yT,
-						g.getFontMetrics().stringWidth(instClose) + 40, 34);
+						g.getFontMetrics().stringWidth(switchClose) + 40, 34);
 
 				g.setColor(Color.BLACK);
 
-				g.drawString(instClose,
-						xL + 5 + (g.getFontMetrics().stringWidth(instClose))
+				g.drawString(switchClose,
+						xL + 5 + (g.getFontMetrics().stringWidth(switchClose))
 								- 94, yT + 17
 								+ (g.getFontMetrics().getHeight() / 4));
 			}
