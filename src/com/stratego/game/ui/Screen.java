@@ -46,6 +46,8 @@ public class Screen {
 	private static int wellSideSelected = -1, wellPieceSelected = -1,
 			wellSideClicked = -1, wellPieceClicked = -1, timesSetup = 0;
 
+	private static int placeholderTurnSide = 0;
+
 	private static Piece wellPiece;
 
 	private static boolean pieceSelected = false, wellSelected = false,
@@ -55,10 +57,10 @@ public class Screen {
 			newSel = false, saveSel = false, endTurnSel = false,
 			instructionsSel = false, mouseLockedToOverlay = false,
 			instructionsCloseSel = false, switchSel = false,
-			winMenuSel = false;
+			loadContSel = false, winMenuSel = false;
 
 	private static boolean instructionsShown = false,
-			betweenTurnsShown = false, wonShown = false;
+			betweenTurnsShown = false, loadShown = false, wonShown = false;
 
 	public static void startGame() {
 
@@ -95,11 +97,14 @@ public class Screen {
 			MainGame.gameBoard[p.x][p.y].piece = p;
 		}
 
-		Screen.turnSide = turn;
+		Screen.placeholderTurnSide = turn;
 		Screen.hasMoved = hasMoved;
 		Screen.isInSetup = inSetup;
 		Screen.timesSetup = timesSetup;
 		Screen.setupSideCompleted = setupSideCompl;
+		turnSide = 2;
+		mouseLockedToOverlay = true;
+		loadShown = true;
 	}
 
 	/**
@@ -420,6 +425,15 @@ public class Screen {
 							hasMoved = false;
 						}
 
+					} else if (loadShown) {
+						
+						if(loadContSel){
+							
+							turnSide = placeholderTurnSide;
+							loadShown = false;
+							mouseLockedToOverlay = false;
+						}
+						
 					} else if (wonShown) {
 
 						if (winMenuSel) {
@@ -1220,27 +1234,44 @@ public class Screen {
 
 			currentSide = 0;
 			currentPiece = 1;
-			
+
 			Font graveFont = new Font("Times New Roman", Font.PLAIN, 2);
-			graveFont = graveFont.deriveFont((float) engine.percentageFontSize(graveFont, 0.025f));
+			graveFont = graveFont.deriveFont((float) engine.percentageFontSize(
+					graveFont, 0.025f));
 			g.setFont(graveFont);
 			g.setColor(PARCHMENT);
-			
-			g.fillRect(0, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+
+			g.fillRect(
+					0,
+					engine.getHeight() - (graveSize * 3)
+							- (g.getFontMetrics().getHeight()) - 10,
+					graveSize * 4, (g.getFontMetrics().getHeight() / 2) + 20);
 			g.setColor(PARCHMENT.darker());
-			g.drawRect(0, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+			g.drawRect(
+					0,
+					engine.getHeight() - (graveSize * 3)
+							- (g.getFontMetrics().getHeight()) - 10,
+					graveSize * 4, (g.getFontMetrics().getHeight() / 2) + 20);
 
 			g.setColor(PARCHMENT.darker().darker().darker());
-			g.drawString("GRAVEYARD", 5, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight()/2));
-			
+			g.drawString("GRAVEYARD", 5, engine.getHeight() - (graveSize * 3)
+					- (g.getFontMetrics().getHeight() / 2));
+
 			g.setColor(PARCHMENT);
-			
-			g.fillRect(engine.getWidth()-(graveSize*4), engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+
+			g.fillRect(engine.getWidth() - (graveSize * 4), engine.getHeight()
+					- (graveSize * 3) - (g.getFontMetrics().getHeight()) - 10,
+					graveSize * 4, (g.getFontMetrics().getHeight() / 2) + 20);
 			g.setColor(PARCHMENT.darker());
-			g.drawRect(engine.getWidth()-(graveSize*4), engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+			g.drawRect(engine.getWidth() - (graveSize * 4), engine.getHeight()
+					- (graveSize * 3) - (g.getFontMetrics().getHeight()) - 10,
+					graveSize * 4, (g.getFontMetrics().getHeight() / 2) + 20);
 
 			g.setColor(PARCHMENT.darker().darker().darker());
-			g.drawString("GRAVEYARD", (engine.getWidth()-(graveSize*4))+5, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight()/2));
+			g.drawString("GRAVEYARD",
+					(engine.getWidth() - (graveSize * 4)) + 5,
+					engine.getHeight() - (graveSize * 3)
+							- (g.getFontMetrics().getHeight() / 2));
 
 			for (int y = 2; y >= 0; y--) {
 
@@ -1617,6 +1648,94 @@ public class Screen {
 				} else {
 
 					switchSel = false;
+
+					g.setColor(GOLD);
+				}
+
+				g.fillRect(xL, yT,
+						g.getFontMetrics().stringWidth(switchClose) + 40, 34);
+
+				g.setColor(g.getColor().darker());
+
+				g.drawRect(xL, yT,
+						g.getFontMetrics().stringWidth(switchClose) + 40, 34);
+
+				g.setColor(Color.BLACK);
+
+				g.drawString(switchClose,
+						xL + 5 + (g.getFontMetrics().stringWidth(switchClose))
+								- 94, yT + 17
+								+ (g.getFontMetrics().getHeight() / 4));
+			}
+
+			// LOAD GAME
+
+			if (loadShown) {
+
+				g.setColor(Color.BLACK);
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.6f));
+				g.fillRect(0, 0, engine.getWidth(), engine.getHeight());
+
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 1f));
+
+				g.setColor(PARCHMENT);
+				int switchWidth = 700;
+				int switchHeight = 200;
+				g.fillRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
+				g.setColor(PARCHMENT.darker());
+				g.drawRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
+
+				Font messageFont = new Font("Times New Roman", Font.PLAIN, 2);
+				messageFont = messageFont.deriveFont((float) engine
+						.percentageFontSize(messageFont, 0.06f));
+				g.setFont(messageFont);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+
+				String switchMessage = "'s turn...";
+
+				if (placeholderTurnSide == 0) {
+
+					switchMessage = "Blue" + switchMessage;
+
+				} else {
+
+					switchMessage = "Red" + switchMessage;
+				}
+
+				g.drawString(switchMessage, (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(switchMessage) / 2),
+						(engine.getHeight() / 2)
+								- (g.getFontMetrics().getHeight() / 4));
+
+				// BETWEEN TURNS CONTINUE
+
+				g.setFont(font);
+
+				String switchClose = "CONTINUE";
+
+				xL = (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(switchClose) - 20);
+				xR = (engine.getWidth() / 2)
+						+ (g.getFontMetrics().stringWidth(switchClose) - 7);
+				yT = (engine.getHeight() / 2) + (switchHeight / 2) - 42;
+				yB = yT + 34;
+
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+
+					loadContSel = true;
+
+					g.setColor(GOLD.brighter());
+
+				} else {
+
+					loadContSel = false;
 
 					g.setColor(GOLD);
 				}
