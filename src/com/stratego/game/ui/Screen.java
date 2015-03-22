@@ -54,7 +54,8 @@ public class Screen {
 	private static boolean startSel = false, loadSel = false, quitSel = false,
 			newSel = false, saveSel = false, endTurnSel = false,
 			instructionsSel = false, mouseLockedToOverlay = false,
-			instructionsCloseSel = false, switchSel = false, winMenuSel = false;
+			instructionsCloseSel = false, switchSel = false,
+			winMenuSel = false;
 
 	private static boolean instructionsShown = false,
 			betweenTurnsShown = false, wonShown = false;
@@ -84,7 +85,8 @@ public class Screen {
 	}
 
 	public static void setupSavegame(Piece[] pieces, int turn,
-			boolean hasMoved, boolean inSetup, int timesSetup) {
+			boolean hasMoved, boolean inSetup, int timesSetup,
+			boolean setupSideCompl) {
 
 		clearGame();
 
@@ -95,6 +97,9 @@ public class Screen {
 
 		Screen.turnSide = turn;
 		Screen.hasMoved = hasMoved;
+		Screen.isInSetup = inSetup;
+		Screen.timesSetup = timesSetup;
+		Screen.setupSideCompleted = setupSideCompl;
 	}
 
 	/**
@@ -157,7 +162,8 @@ public class Screen {
 
 							SaveManager.saveGame(
 									pieces.toArray(new Piece[] {}), turnSide,
-									hasMoved, isInSetup, timesSetup);
+									hasMoved, isInSetup, timesSetup,
+									setupSideCompleted);
 
 						} else if (endTurnSel) {
 
@@ -220,7 +226,8 @@ public class Screen {
 								wellClicked = false;
 							}
 
-						} else if (gridMouseX >= 0 && gridMouseY >= 0 && !mouseLockedToOverlay) {
+						} else if (gridMouseX >= 0 && gridMouseY >= 0
+								&& !mouseLockedToOverlay) {
 
 							if (isInSetup
 									&& e.getButton() == MouseEvent.BUTTON3) {
@@ -301,12 +308,12 @@ public class Screen {
 												MainGame.gameBoard[selectX][selectY].piece,
 												MainGame.gameBoard[gridMouseX][gridMouseY].piece);
 
-										if(won){
-											
+										if (won) {
+
 											mouseLockedToOverlay = true;
 											wonShown = true;
 										}
-										
+
 										hasMoved = true;
 										startX = selectX;
 										startY = selectY;
@@ -413,10 +420,10 @@ public class Screen {
 							hasMoved = false;
 						}
 
-					}else if(wonShown){
+					} else if (wonShown) {
 
-						if(winMenuSel){
-							
+						if (winMenuSel) {
+
 							wonShown = false;
 							mouseLockedToOverlay = false;
 							clearGame();
@@ -476,13 +483,14 @@ public class Screen {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				
-				if(e.isShiftDown() && e.isControlDown() && e.isAltDown()){
-					
-					if(e.getKeyCode() == KeyEvent.VK_W){
 
-						GameManager.getLogger().log("Cheat activated! (WIN_AUTO)");
-						
+				if (e.isShiftDown() && e.isControlDown() && e.isAltDown()) {
+
+					if (e.getKeyCode() == KeyEvent.VK_W) {
+
+						GameManager.getLogger().log(
+								"Cheat activated! (WIN_AUTO)");
+
 						wonShown = true;
 						mouseLockedToOverlay = true;
 					}
@@ -1207,6 +1215,161 @@ public class Screen {
 						AlphaComposite.SRC_OVER, 1f));
 			}
 
+			// GRAVEYARD LEFT
+			int graveSize = ((engine.getWidth() / 2) - (gridSquareSize * 5) - 50) / 4;
+
+			currentSide = 0;
+			currentPiece = 1;
+			
+			Font graveFont = new Font("Times New Roman", Font.PLAIN, 2);
+			graveFont = graveFont.deriveFont((float) engine.percentageFontSize(graveFont, 0.025f));
+			g.setFont(graveFont);
+			g.setColor(PARCHMENT);
+			
+			g.fillRect(0, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+			g.setColor(PARCHMENT.darker());
+			g.drawRect(0, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+
+			g.setColor(PARCHMENT.darker().darker().darker());
+			g.drawString("GRAVEYARD", 5, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight()/2));
+			
+			g.setColor(PARCHMENT);
+			
+			g.fillRect(engine.getWidth()-(graveSize*4), engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+			g.setColor(PARCHMENT.darker());
+			g.drawRect(engine.getWidth()-(graveSize*4), engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight())-10, graveSize*4, (g.getFontMetrics().getHeight()/2)+20);
+
+			g.setColor(PARCHMENT.darker().darker().darker());
+			g.drawString("GRAVEYARD", (engine.getWidth()-(graveSize*4))+5, engine.getHeight()-(graveSize*3)-(g.getFontMetrics().getHeight()/2));
+
+			for (int y = 2; y >= 0; y--) {
+
+				for (int x = 0; x < 4; x++) {
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT
+							: makeBlackAndWhite(PARCHMENT));
+
+					g.fillRect(graveSize * x, engine.getHeight()
+							- (graveSize * (y + 2)) + 70, graveSize + 1,
+							graveSize + 1);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.darker()
+							: makeBlackAndWhite(PARCHMENT.darker()));
+
+					g.drawRect(graveSize * x, engine.getHeight() - graveSize
+							* (y + 2) + 70, graveSize + 1, graveSize + 1);
+					PieceDrawer
+							.drawPiece(engine, currentPiece, currentSide,
+									graveSize * x + 8, engine.getHeight()
+											- graveSize * (y + 2) + 78,
+									graveSize - 16, graveSize - 16, -81, -1,
+									-1, PieceData.getDeadAmount(currentSide,
+											currentPiece) == 0);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.brighter()
+							: makeBlackAndWhite(PARCHMENT.brighter()));
+
+					g.fillOval((graveSize * (x + 1)) - 19, engine.getHeight()
+							- (graveSize * (y + 1)) + 51, 16, 16);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.darker().darker()
+							.darker() : makeBlackAndWhite(PARCHMENT.darker()
+							.darker().darker()));
+
+					Font amountFont = new Font("Times New Roman", Font.BOLD, 2);
+					amountFont = amountFont.deriveFont((float) engine
+							.percentageFontSize(amountFont, 0.015f));
+					g.setFont(amountFont);
+
+					g.drawString(
+							Integer.toString(PieceData.getDeadAmount(
+									currentSide, currentPiece)),
+							(graveSize * (x + 1))
+									- g.getFontMetrics().stringWidth(
+											Integer.toString(PieceData
+													.getDeadAmount(currentSide,
+															currentPiece))) - 6,
+							engine.getHeight() - (graveSize * (y + 1))
+									- g.getFontMetrics().getHeight() + 81);
+
+					currentPiece++;
+				}
+			}
+
+			// GRAVEYARD RIGHT
+
+			currentSide = 1;
+			currentPiece = 1;
+
+			for (int y = 2; y >= 0; y--) {
+
+				for (int x = 3; x >= 0; x--) {
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT
+							: makeBlackAndWhite(PARCHMENT));
+
+					g.fillRect(engine.getWidth() - (graveSize * (x + 1)),
+							engine.getHeight() - (graveSize * (y + 2)) + 70,
+							graveSize + 1, graveSize + 1);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.darker()
+							: makeBlackAndWhite(PARCHMENT.darker()));
+
+					g.drawRect(engine.getWidth() - (graveSize * (x + 1)),
+							engine.getHeight() - graveSize * (y + 2) + 70,
+							graveSize + 1, graveSize + 1);
+					PieceDrawer
+							.drawPiece(
+									engine,
+									currentPiece,
+									currentSide,
+									engine.getWidth() - graveSize * (x + 1) + 8,
+									engine.getHeight() - graveSize * (y + 2)
+											+ 78, graveSize - 16,
+									graveSize - 16, -81, -1, -1, PieceData
+											.getDeadAmount(currentSide,
+													currentPiece) == 0);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.brighter()
+							: makeBlackAndWhite(PARCHMENT.brighter()));
+
+					g.fillOval(engine.getWidth() - (graveSize * (x)) - 19,
+							engine.getHeight() - (graveSize * (y + 1)) + 51,
+							16, 16);
+
+					g.setColor(PieceData.getDeadAmount(currentSide,
+							currentPiece) > 0 ? PARCHMENT.darker().darker()
+							.darker() : makeBlackAndWhite(PARCHMENT.darker()
+							.darker().darker()));
+
+					Font amountFont = new Font("Times New Roman", Font.BOLD, 2);
+					amountFont = amountFont.deriveFont((float) engine
+							.percentageFontSize(amountFont, 0.015f));
+					g.setFont(amountFont);
+
+					g.drawString(
+							Integer.toString(PieceData.getDeadAmount(
+									currentSide, currentPiece)),
+							engine.getWidth()
+									- (graveSize * (x))
+									- g.getFontMetrics().stringWidth(
+											Integer.toString(PieceData
+													.getDeadAmount(currentSide,
+															currentPiece))) - 6,
+							engine.getHeight() - (graveSize * (y + 1))
+									- g.getFontMetrics().getHeight() + 81);
+
+					currentPiece++;
+				}
+			}
+
 			// SHOW POSSIBLE MOVES
 
 			if (pieceSelected) {
@@ -1505,16 +1668,16 @@ public class Screen {
 				g.setColor(PARCHMENT.darker().darker().darker());
 
 				String switchMessage = " wins!";
-				
-				if(turnSide == 0){
-					
-					switchMessage = "Blue "+switchMessage;
-					
-				}else{
 
-					switchMessage = "Red "+switchMessage;					
+				if (turnSide == 0) {
+
+					switchMessage = "Blue " + switchMessage;
+
+				} else {
+
+					switchMessage = "Red " + switchMessage;
 				}
-				
+
 				g.drawString(switchMessage, (engine.getWidth() / 2)
 						- (g.getFontMetrics().stringWidth(switchMessage) / 2),
 						(engine.getHeight() / 2)

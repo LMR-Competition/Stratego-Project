@@ -14,7 +14,7 @@ import com.stratego.game.ui.Screen;
 public class SaveManager {
 
 	public static void saveGame(Piece[] pieces, int turn, boolean hasMoved,
-			boolean isInSetup, int timesSetup) {
+			boolean isInSetup, int timesSetup, boolean setupSideCompl) {
 
 		GameManager.getLogger().log("Saving...");
 
@@ -43,7 +43,9 @@ public class SaveManager {
 
 		toWrite += "s:" + isInSetup + "|";
 
-		toWrite += "ts:" + timesSetup;
+		toWrite += "ts:" + timesSetup + "|";
+		
+		toWrite += "sc:" + setupSideCompl;
 
 		File saveFile = new File("stratego.sav");
 
@@ -94,6 +96,7 @@ public class SaveManager {
 				boolean hasMoved = false;
 				boolean isInSetup = false;
 				int timesSetup = 0;
+				boolean setupSideCompl = false;
 
 				for (String str : parts) {
 
@@ -211,11 +214,24 @@ public class SaveManager {
 						}
 
 						break;
+
+					case "sc":
+
+						try {
+
+							boolean is = Boolean.parseBoolean(strParts[1]);
+
+							setupSideCompl = is;
+
+						} catch (Exception e) {
+						}
+
+						break;
 					}
 				}
 
 				Screen.setupSavegame(pieces.toArray(new Piece[] {}), turnSide,
-						hasMoved, isInSetup, timesSetup);
+						hasMoved, isInSetup, timesSetup, setupSideCompl);
 
 			} catch (Exception e) {
 

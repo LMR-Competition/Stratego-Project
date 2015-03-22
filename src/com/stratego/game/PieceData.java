@@ -10,6 +10,9 @@ public class PieceData {
 	private static Map<Integer, Integer> pieceAmounts0 = new HashMap<Integer, Integer>();
 	private static Map<Integer, Integer> pieceAmounts1 = new HashMap<Integer, Integer>();
 
+	private static Map<Integer, Integer> pieceAmountsDead0 = new HashMap<Integer, Integer>();
+	private static Map<Integer, Integer> pieceAmountsDead1 = new HashMap<Integer, Integer>();
+	
 	public static void setupAmounts() {
 
 		GameManager.getLogger().log("Setting up piece amounts...");
@@ -38,6 +41,8 @@ public class PieceData {
 		pieceAmounts1.put(10, 1);
 		pieceAmounts1.put(11, 6);
 		pieceAmounts1.put(12, 1);
+		pieceAmountsDead0.clear();
+		pieceAmountsDead1.clear();
 	}
 
 	public static int getPieceAmount(int side, int value) {
@@ -54,6 +59,26 @@ public class PieceData {
 			if (pieceAmounts1.containsKey(value)) {
 
 				return pieceAmounts1.get(value);
+			}
+		}
+
+		return 0;
+	}
+	
+	public static int getDeadAmount(int side, int value) {
+
+		if (side == 0) {
+
+			if (pieceAmountsDead0.containsKey(value)) {
+
+				return pieceAmountsDead0.get(value);
+			}
+
+		} else if (side == 1) {
+
+			if (pieceAmountsDead1.containsKey(value)) {
+
+				return pieceAmountsDead1.get(value);
 			}
 		}
 
@@ -109,10 +134,38 @@ public class PieceData {
 			}
 		}
 	}
+	
+	public static void killPiece(int side, int value) {
+
+		if (side == 0) {
+
+			if (pieceAmountsDead0.containsKey(value)) {
+
+				pieceAmountsDead0.put(value, pieceAmountsDead0.get(value) + 1);
+
+			} else {
+
+				pieceAmountsDead0.put(value, 1);
+			}
+
+		} else if (side == 1) {
+
+			if (pieceAmountsDead1.containsKey(value)) {
+
+				pieceAmountsDead1.put(value, pieceAmountsDead1.get(value) + 1);
+
+			} else {
+
+				pieceAmountsDead1.put(value, 1);
+			}
+		}
+	}
 
 	public static void reset() {
 
 		pieceAmounts0.clear();
 		pieceAmounts1.clear();
+		pieceAmountsDead0.clear();
+		pieceAmountsDead1.clear();
 	}
 }

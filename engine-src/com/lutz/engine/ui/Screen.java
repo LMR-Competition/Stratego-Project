@@ -56,6 +56,7 @@ public class Screen {
 		frame.addMouseMotionListener(com.stratego.game.ui.Screen
 				.getMouseMotionListener());
 		frame.addKeyListener(com.stratego.game.ui.Screen.getKeyListener());
+		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
 		figureSize();
 	}
