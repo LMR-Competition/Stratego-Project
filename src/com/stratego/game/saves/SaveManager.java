@@ -37,6 +37,17 @@ public class SaveManager {
 			}
 		}
 
+		for (int side = 0; side <= 1; side++) {
+
+			for (int rank = 1; rank <= 12; rank++) {
+
+				for (int times = PieceData.getDeadAmount(side, rank); times > 0; times--) {
+
+					toWrite += "dp:" + rank + "," + side + "|";
+				}
+			}
+		}
+
 		toWrite += "t:" + turn + "|";
 
 		toWrite += "h:" + hasMoved + "|";
@@ -149,6 +160,31 @@ public class SaveManager {
 										&& (side == 0 || side == 1)) {
 
 									PieceData.addPieceToWell(side, rank);
+								}
+
+							} catch (Exception e) {
+							}
+						}
+
+						break;
+
+					case "dp":
+
+						String[] deadData = strParts[1].split(",");
+
+						if (deadData.length == 2) {
+
+							int rank, side;
+
+							try {
+
+								rank = Integer.parseInt(deadData[0]);
+								side = Integer.parseInt(deadData[1]);
+
+								if (rank > 0 && rank <= 12
+										&& (side == 0 || side == 1)) {
+
+									PieceData.killPiece(side, rank);
 								}
 
 							} catch (Exception e) {
