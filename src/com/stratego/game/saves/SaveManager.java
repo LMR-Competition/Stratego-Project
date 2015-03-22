@@ -215,7 +215,7 @@ public class SaveManager {
 
 							boolean is = Boolean.parseBoolean(strParts[1]);
 
-							isInSetup = is;
+							hasMoved = is;
 
 						} catch (Exception e) {
 						}
@@ -228,7 +228,7 @@ public class SaveManager {
 
 							boolean has = Boolean.parseBoolean(strParts[1]);
 
-							hasMoved = has;
+							isInSetup = has;
 
 						} catch (Exception e) {
 						}
