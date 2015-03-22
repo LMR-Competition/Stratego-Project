@@ -13,8 +13,8 @@
 package com.stratego.game;
 
 import java.awt.Point;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Movement {
 
@@ -40,8 +40,12 @@ public class Movement {
 		// }
 	}
 
-	public static Point[] getMoveRange(Piece selected, boolean hasMoved) {
+	public static Point[] getMoveRange(Piece selected, boolean hasMoved, boolean inSetup) {
 
+		List<Point> pointList = new ArrayList<Point>();
+
+		if(!inSetup){
+		
 		if (hasMoved) {
 
 			return new Point[] {};
@@ -49,8 +53,6 @@ public class Movement {
 
 		int x = selected.x;
 		int y = selected.y;
-
-		List<Point> pointList = new ArrayList<Point>();
 
 		switch (selected.soldierRank) {
 
@@ -183,13 +185,43 @@ public class Movement {
 
 			break;
 		}
+		
+		}else{
+			
+			if(selected.soldierSide == 0){
+				
+				for(int x = 0; x < 10; x++){
+					
+					for(int y = 0; y < 4; y++){
+						
+						if(MainGame.gameBoard[x][y].piece == null){
+							
+							pointList.add(new Point(x, y));
+						}
+					}
+				}
+				
+			}else if(selected.soldierSide == 1){
+				
+				for(int x = 0; x < 10; x++){
+					
+					for(int y = 6; y < 10; y++){
+						
+						if(MainGame.gameBoard[x][y].piece == null){
+							
+							pointList.add(new Point(x, y));
+						}
+					}
+				}
+			}
+		}
 
 		return pointList.toArray(new Point[] {});
 	}
 
-	public static boolean canMoveHere(int x, int y, Piece piece, boolean hasMoved) {
+	public static boolean canMoveHere(int x, int y, Piece piece, boolean hasMoved, boolean setup) {
 
-		Point[] points = getMoveRange(piece, hasMoved);
+		Point[] points = getMoveRange(piece, hasMoved, setup);
 
 		for (Point p : points) {
 

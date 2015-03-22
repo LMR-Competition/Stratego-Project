@@ -8,11 +8,13 @@ import java.util.Scanner;
 
 import com.lutz.engine.game.GameManager;
 import com.stratego.game.Piece;
+import com.stratego.game.PieceData;
 import com.stratego.game.ui.Screen;
 
 public class SaveManager {
 
-	public static void saveGame(Piece[] pieces, int turn, boolean hasMoved) {
+	public static void saveGame(Piece[] pieces, int turn, boolean hasMoved,
+			boolean isInSetup, int timesSetup) {
 
 		GameManager.getLogger().log("Saving...");
 
@@ -24,9 +26,24 @@ public class SaveManager {
 					+ p.soldierSide + "|";
 		}
 
+		for (int side = 0; side <= 1; side++) {
+
+			for (int rank = 1; rank <= 12; rank++) {
+
+				for (int times = PieceData.getPieceAmount(side, rank); times > 0; times--) {
+
+					toWrite += "wp:" + rank + "," + side + "|";
+				}
+			}
+		}
+
 		toWrite += "t:" + turn + "|";
 
-		toWrite += "h:" + hasMoved;
+		toWrite += "h:" + hasMoved + "|";
+
+		toWrite += "s:" + isInSetup + "|";
+
+		toWrite += "ts:" + timesSetup;
 
 		File saveFile = new File("stratego.sav");
 
@@ -51,6 +68,8 @@ public class SaveManager {
 
 		GameManager.getLogger().log("Loading...");
 
+		PieceData.reset();
+
 		File saveFile = new File("stratego.sav");
 
 		if (saveFile.exists()) {
@@ -66,11 +85,15 @@ public class SaveManager {
 					read += sc.nextLine();
 				}
 
+				sc.close();
+
 				String[] parts = read.split("\\|");
 
 				List<Piece> pieces = new ArrayList<Piece>();
 				int turnSide = 0;
 				boolean hasMoved = false;
+				boolean isInSetup = false;
+				int timesSetup = 0;
 
 				for (String str : parts) {
 
@@ -106,6 +129,31 @@ public class SaveManager {
 
 						break;
 
+					case "wp":
+
+						String[] wellData = strParts[1].split(",");
+
+						if (wellData.length == 2) {
+
+							int rank, side;
+
+							try {
+
+								rank = Integer.parseInt(wellData[0]);
+								side = Integer.parseInt(wellData[1]);
+
+								if (rank > 0 && rank <= 12
+										&& (side == 0 || side == 1)) {
+
+									PieceData.addPieceToWell(side, rank);
+								}
+
+							} catch (Exception e) {
+							}
+						}
+
+						break;
+
 					case "t":
 
 						try {
@@ -126,9 +174,38 @@ public class SaveManager {
 
 						try {
 
+							boolean is = Boolean.parseBoolean(strParts[1]);
+
+							isInSetup = is;
+
+						} catch (Exception e) {
+						}
+
+						break;
+
+					case "s":
+
+						try {
+
 							boolean has = Boolean.parseBoolean(strParts[1]);
 
 							hasMoved = has;
+
+						} catch (Exception e) {
+						}
+
+						break;
+
+					case "ts":
+
+						try {
+
+							int times = Integer.parseInt(strParts[1]);
+
+							if (times >= 0 && times <= 2) {
+
+								timesSetup = times;
+							}
 
 						} catch (Exception e) {
 						}
@@ -138,7 +215,7 @@ public class SaveManager {
 				}
 
 				Screen.setupSavegame(pieces.toArray(new Piece[] {}), turnSide,
-						hasMoved);
+						hasMoved, isInSetup, timesSetup);
 
 			} catch (Exception e) {
 

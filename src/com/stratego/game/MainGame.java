@@ -2,7 +2,6 @@ package com.stratego.game;
 
 import java.awt.Image;
 
-import com.lutz.advlogging.Logger;
 import com.lutz.engine.game.ActionType;
 import com.lutz.engine.game.GameAction;
 import com.lutz.engine.resources.ImageResource;
@@ -12,7 +11,6 @@ import com.lutz.engine.settings.loading.GameSetting;
 import com.lutz.engine.settings.loading.SettingType;
 import com.lutz.engine.ui.Screen;
 import com.lutz.engine.ui.graphics.resolutions.AspectRatio;
-import com.stratego.game.ai.MainAI;
 
 public class MainGame {
 	
@@ -41,14 +39,11 @@ public class MainGame {
 				gameBoard[x][y] = new Tile(x, y);
 			}
 		}
-		
-		//MainAI.setPlayerBoard();
 	}
 
 	@GameAction(ActionType.UI_PRESHOW)
 	public static void uiPreShow() {
-		MainAI.setBoard();
-		MainAI.setPlayerBoard();
+		
 	}
 
 	@GameAction(ActionType.UI_POSTSHOW)

@@ -10,24 +10,29 @@ import com.stratego.game.MainGame;
 public class PieceDrawer {
 
 	public static void drawPiece(GraphicsEngine engine, int pointValue,
-			int side, int x, int y, int width, int height, int turn, int gridX, int gridY) {
+			int side, int x, int y, int width, int height, int turn, int gridX,
+			int gridY, boolean blackAndWhite) {
 
 		Graphics2D g = engine.getGraphics();
 
 		if (side == 0) {
 
-			g.setColor(Color.BLUE);
+			g.setColor(blackAndWhite ? Screen.makeBlackAndWhite(Color.BLUE
+					.darker()) : Color.BLUE.darker());
 
 		} else {
 
-			g.setColor(Color.RED);
+			g.setColor(blackAndWhite ? Screen.makeBlackAndWhite(Color.RED
+					.darker()) : Color.RED.darker());
 		}
 
 		g.fillRect(x + 2, y + 2, width - 5, height - 5);
-		
-		if (turn == side || MainGame.gameBoard[gridX][gridY].piece.justAttacked) {
 
-			g.setColor(Color.YELLOW);
+		if (turn == side || turn == -1 || gridX < 0 || gridY < 0
+				|| MainGame.gameBoard[gridX][gridY].piece.justAttacked) {
+
+			g.setColor(blackAndWhite ? Screen.makeBlackAndWhite(Screen.GOLD)
+					: Screen.GOLD);
 			Font f = new Font("Times New Roman", Font.PLAIN, 2);
 			f = f.deriveFont((float) engine.percentageFontSize(f, (float) width
 					/ engine.getHeight()));

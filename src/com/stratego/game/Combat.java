@@ -1,6 +1,8 @@
 // TODO: Make this class report to the tile 'graveyard'
 package com.stratego.game;
 
+import com.stratego.game.ui.Screen;
+
 public class Combat {
 
 	public static void engage(Piece attacker, Piece defender) {
@@ -31,8 +33,7 @@ public class Combat {
 				}
 			} else if (defender.soldierRank == 12) {
 
-				// TODO When won
-
+				Screen.won = true;
 			}
 
 		} else {
