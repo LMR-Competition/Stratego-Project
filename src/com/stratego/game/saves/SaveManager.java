@@ -87,6 +87,11 @@ public class SaveManager {
 			GameManager.getLogger().logException(e);
 		}
 	}
+	
+	public static boolean loadFileExists(){
+		
+		return new File("stratego.strgsv").exists();
+	}
 
 	public static void loadGame() {
 

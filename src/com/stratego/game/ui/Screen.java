@@ -626,17 +626,26 @@ public class Screen {
 			yTop = engine.getHeight() - 310;
 			yBottom = engine.getHeight() - 250;
 
-			if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
+			if (SaveManager.loadFileExists()) {
 
-				loadSel = true;
+				if (mX >= xLeft && mX <= xRight && mY >= yTop && mY < yBottom) {
 
-				g.setColor(RED_BUTTON_BOTTOM.brighter());
+					loadSel = true;
+
+					g.setColor(RED_BUTTON_BOTTOM.brighter());
+
+				} else {
+
+					loadSel = false;
+
+					g.setColor(RED_BUTTON_BOTTOM);
+				}
 
 			} else {
 
 				loadSel = false;
 
-				g.setColor(RED_BUTTON_BOTTOM);
+				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM));
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 350, 400 },
@@ -644,13 +653,20 @@ public class Screen {
 							engine.getHeight() - 280, engine.getHeight() - 280,
 							engine.getHeight() - 250 }, 4);
 
-			if (loadSel) {
+			if (SaveManager.loadFileExists()) {
 
-				g.setColor(RED_BUTTON_TOP.brighter());
+				if (loadSel) {
+
+					g.setColor(RED_BUTTON_TOP.brighter());
+
+				} else {
+
+					g.setColor(RED_BUTTON_TOP);
+				}
 
 			} else {
 
-				g.setColor(RED_BUTTON_TOP);
+				g.setColor(makeBlackAndWhite(RED_BUTTON_TOP));
 			}
 
 			g.fillPolygon(new int[] { 20, 20, 400, 350 },
@@ -658,13 +674,21 @@ public class Screen {
 							engine.getHeight() - 310, engine.getHeight() - 310,
 							engine.getHeight() - 280 }, 4);
 
-			if (loadSel) {
+			if (SaveManager.loadFileExists()) {
 
-				g.setColor(RED_BUTTON_BOTTOM.darker().darker());
+				if (loadSel) {
+
+					g.setColor(RED_BUTTON_BOTTOM.darker().darker());
+
+				} else {
+
+					g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
+				}
 
 			} else {
 
-				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
+				g.setColor(makeBlackAndWhite(RED_BUTTON_BOTTOM.darker()
+						.darker().darker()));
 			}
 
 			g.drawString("RESUME", 40, engine.getHeight() - 250
