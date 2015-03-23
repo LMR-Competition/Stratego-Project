@@ -58,7 +58,7 @@ public class SaveManager {
 		
 		toWrite += "sc:" + setupSideCompl;
 
-		File saveFile = new File("stratego.sav");
+		File saveFile = new File("stratego.strgsv");
 
 		try {
 
@@ -83,7 +83,7 @@ public class SaveManager {
 
 		PieceData.reset();
 
-		File saveFile = new File("stratego.sav");
+		File saveFile = new File("stratego.strgsv");
 
 		if (saveFile.exists()) {
 
