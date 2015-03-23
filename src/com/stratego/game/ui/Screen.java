@@ -70,6 +70,7 @@ public class Screen {
 		won = false;
 		hasMoved = false;
 		timesSetup = 0;
+		setupSideCompleted = false;
 		pieceSelected = false;
 		clearGame();
 		PieceData.setupAmounts();
