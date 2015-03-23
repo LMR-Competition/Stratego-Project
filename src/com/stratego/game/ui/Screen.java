@@ -55,12 +55,14 @@ public class Screen {
 
 	private static boolean startSel = false, loadSel = false, quitSel = false,
 			newSel = false, saveSel = false, endTurnSel = false,
-			instructionsSel = false, mouseLockedToOverlay = false,
-			instructionsCloseSel = false, switchSel = false,
-			loadContSel = false, winMenuSel = false;
+			endTurnCancel = false, instructionsSel = false,
+			mouseLockedToOverlay = false, instructionsCloseSel = false,
+			switchSel = false, loadContSel = false, winMenuSel = false,
+			newYesSel = false, newNoSel = false;
 
 	private static boolean instructionsShown = false,
-			betweenTurnsShown = false, loadShown = false, wonShown = false;
+			betweenTurnsShown = false, loadShown = false, newShown = false,
+			wonShown = false;
 
 	public static void startGame() {
 
@@ -426,14 +428,14 @@ public class Screen {
 						}
 
 					} else if (loadShown) {
-						
-						if(loadContSel){
-							
+
+						if (loadContSel) {
+
 							turnSide = placeholderTurnSide;
 							loadShown = false;
 							mouseLockedToOverlay = false;
 						}
-						
+
 					} else if (wonShown) {
 
 						if (winMenuSel) {
@@ -664,7 +666,7 @@ public class Screen {
 				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
 			}
 
-			g.drawString("LOAD", 40, engine.getHeight() - 250
+			g.drawString("RESUME", 40, engine.getHeight() - 250
 					- (g.getFontMetrics().getHeight() / 4));
 
 			// START
@@ -713,7 +715,7 @@ public class Screen {
 				g.setColor(RED_BUTTON_BOTTOM.darker().darker().darker());
 			}
 
-			g.drawString("START", 40, engine.getHeight() - 360
+			g.drawString("NEW GAME", 40, engine.getHeight() - 360
 					- (g.getFontMetrics().getHeight() / 4));
 
 			break;
@@ -986,7 +988,8 @@ public class Screen {
 
 			int wellSize = ((engine.getWidth() / 2) - (gridSquareSize * 5) - 50) / 3;
 
-			if ((mX >= 0 && mX <= (wellSize * 3) && mY >= 70 && mY <= 70 + (wellSize * 4))
+			if (!mouseLockedToOverlay
+					&& (mX >= 0 && mX <= (wellSize * 3) && mY >= 70 && mY <= 70 + (wellSize * 4))
 					|| (mX >= engine.getWidth() - (wellSize * 3)
 							&& mX <= engine.getWidth() && mY >= 70 && mY <= 70 + (wellSize * 4))) {
 
@@ -1752,6 +1755,86 @@ public class Screen {
 
 				g.drawString(switchClose,
 						xL + 5 + (g.getFontMetrics().stringWidth(switchClose))
+								- 94, yT + 17
+								+ (g.getFontMetrics().getHeight() / 4));
+			}
+
+			// CHECK NEW GAME
+
+			if (newShown) {
+
+				g.setColor(Color.BLACK);
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.6f));
+				g.fillRect(0, 0, engine.getWidth(), engine.getHeight());
+
+				g.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 1f));
+
+				g.setColor(PARCHMENT);
+				int switchWidth = 700;
+				int switchHeight = 200;
+				g.fillRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
+				g.setColor(PARCHMENT.darker());
+				g.drawRect((engine.getWidth() / 2) - (switchWidth / 2),
+						(engine.getHeight() / 2) - (switchHeight / 2),
+						switchWidth, switchHeight);
+
+				Font messageFont = new Font("Times New Roman", Font.PLAIN, 2);
+				messageFont = messageFont.deriveFont((float) engine
+						.percentageFontSize(messageFont, 0.06f));
+				g.setFont(messageFont);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+
+				String switchMessage = "Are you sure?";
+
+				g.drawString(switchMessage, (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(switchMessage) / 2),
+						(engine.getHeight() / 2)
+								- (g.getFontMetrics().getHeight() / 4));
+
+				// BETWEEN TURNS CONTINUE
+
+				g.setFont(font);
+
+				String yesButton = "YES";
+				String noButton = "NO";
+
+				xL = (engine.getWidth() / 2)
+						- (g.getFontMetrics().stringWidth(yesButton) - 20);
+				xR = (engine.getWidth() / 2)
+						+ (g.getFontMetrics().stringWidth(noButton) - 7);
+				yT = (engine.getHeight() / 2) + (switchHeight / 2) - 42;
+				yB = yT + 34;
+
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+
+					loadContSel = true;
+
+					g.setColor(GOLD.brighter());
+
+				} else {
+
+					loadContSel = false;
+
+					g.setColor(GOLD);
+				}
+
+				g.fillRect(xL, yT,
+						g.getFontMetrics().stringWidth(yesButton) + 40, 34);
+
+				g.setColor(g.getColor().darker());
+
+				g.drawRect(xL, yT,
+						g.getFontMetrics().stringWidth(yesButton) + 40, 34);
+
+				g.setColor(Color.BLACK);
+
+				g.drawString(yesButton,
+						xL + 5 + (g.getFontMetrics().stringWidth(yesButton))
 								- 94, yT + 17
 								+ (g.getFontMetrics().getHeight() / 4));
 			}
