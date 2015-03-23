@@ -39,6 +39,12 @@ public class Combat {
 				}
 			} else if (defender.soldierRank == 12) {
 
+				PieceData.killPiece(MainGame.gameBoard[defender.x][defender.y].piece.soldierSide, MainGame.gameBoard[defender.x][defender.y].piece.soldierRank);
+				Movement.preparePiece(defender.x, defender.y,
+						attacker.soldierRank, attacker.soldierSide);
+				MainGame.gameBoard[defender.x][defender.y].piece.justAttacked = true;
+				MainGame.gameBoard[attacker.x][attacker.y].piece = null;
+				
 				Screen.won = true;
 			}
 
