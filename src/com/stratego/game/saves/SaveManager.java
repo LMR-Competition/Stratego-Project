@@ -1,10 +1,21 @@
 package com.stratego.game.saves;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.PrintStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Random;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 import com.lutz.engine.game.GameManager;
 import com.stratego.game.Piece;
@@ -64,11 +75,11 @@ public class SaveManager {
 
 			saveFile.createNewFile();
 
-			PrintStream ps = new PrintStream(saveFile);
-
-			ps.println(toWrite);
-
-			ps.close();
+			DataOutputStream output = new DataOutputStream(new CipherOutputStream(new FileOutputStream(saveFile), getCipher(Cipher.ENCRYPT_MODE, "lmstrtgsv")));
+			
+			output.writeUTF(toWrite);
+			output.flush();
+			output.close();
 
 		} catch (Exception e) {
 
@@ -88,18 +99,12 @@ public class SaveManager {
 		if (saveFile.exists()) {
 
 			try {
+				
+				DataInputStream input = new DataInputStream(new CipherInputStream(new FileInputStream(saveFile), getCipher(Cipher.DECRYPT_MODE, "lmstrtgsv")));
 
-				Scanner sc = new Scanner(saveFile);
-
-				String read = "";
-
-				while (sc.hasNextLine()) {
-
-					read += sc.nextLine();
-				}
-
-				sc.close();
-
+				String read = input.readUTF();
+				input.close();
+				
 				String[] parts = read.split("\\|");
 
 				List<Piece> pieces = new ArrayList<Piece>();
@@ -276,6 +281,32 @@ public class SaveManager {
 
 				Screen.startGame();
 			}
+		}
+	}
+	
+	private static Cipher getCipher(int mode, String key) {
+		
+		try {
+			
+			Random random = new Random(123321L);
+			byte[] salt = new byte[8];
+			random.nextBytes(salt);
+
+			PBEParameterSpec pspec = new PBEParameterSpec(salt, 5);
+
+			SecretKey pbeKey = SecretKeyFactory
+					.getInstance("PBEWithMD5AndDES").generateSecret(
+							new PBEKeySpec(key.toCharArray()));
+
+			Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
+			cipher.init(mode, pbeKey, pspec);
+
+			return cipher;
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			return null;
 		}
 	}
 }
