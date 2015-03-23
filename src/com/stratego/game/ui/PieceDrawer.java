@@ -11,7 +11,7 @@ public class PieceDrawer {
 
 	public static void drawPiece(GraphicsEngine engine, int pointValue,
 			int side, int x, int y, int width, int height, int turn, int gridX,
-			int gridY, boolean blackAndWhite) {
+			int gridY, boolean blackAndWhite, boolean won) {
 
 		Graphics2D g = engine.getGraphics();
 
@@ -29,7 +29,7 @@ public class PieceDrawer {
 		g.fillRect(x + 2, y + 2, width - 5, height - 5);
 
 		if (turn == side || turn == -1 || gridX < 0 || gridY < 0
-				|| MainGame.gameBoard[gridX][gridY].piece.justAttacked) {
+				|| MainGame.gameBoard[gridX][gridY].piece.justAttacked || won) {
 
 			g.setColor(blackAndWhite ? Screen.makeBlackAndWhite(Screen.GOLD)
 					: Screen.GOLD);

@@ -978,7 +978,7 @@ public class Screen {
 						PieceDrawer.drawPiece(engine, p.soldierRank,
 								p.soldierSide, gXL + (gridSquareSize * x), gYT
 										+ (gridSquareSize * y), gridSquareSize,
-								gridSquareSize, turnSide, x, y, false);
+								gridSquareSize, turnSide, x, y, false, won);
 					}
 				}
 			}
@@ -1052,7 +1052,7 @@ public class Screen {
 									wellSize * x + 8, wellSize * y + 78,
 									wellSize - 16, wellSize - 16, -81, -1, -1,
 									PieceData.getPieceAmount(currentSide,
-											currentPiece) == 0);
+											currentPiece) == 0, won);
 
 					if (wellSelected
 							&& wellSideSelected == currentSide
@@ -1168,7 +1168,7 @@ public class Screen {
 											+ 8, wellSize * y + 78,
 									wellSize - 16, wellSize - 16, -81, -1, -1,
 									PieceData.getPieceAmount(currentSide,
-											currentPiece) == 0);
+											currentPiece) == 0, won);
 
 					if (wellSelected
 							&& wellSideSelected == currentSide
@@ -1301,7 +1301,7 @@ public class Screen {
 											- graveSize * (y + 2) + 78,
 									graveSize - 16, graveSize - 16, -81, -1,
 									-1, PieceData.getDeadAmount(currentSide,
-											currentPiece) == 0);
+											currentPiece) == 0, won);
 
 					g.setColor(PieceData.getDeadAmount(currentSide,
 							currentPiece) > 0 ? PARCHMENT.brighter()
@@ -1369,7 +1369,7 @@ public class Screen {
 											+ 78, graveSize - 16,
 									graveSize - 16, -81, -1, -1, PieceData
 											.getDeadAmount(currentSide,
-													currentPiece) == 0);
+													currentPiece) == 0, won);
 
 					g.setColor(PieceData.getDeadAmount(currentSide,
 							currentPiece) > 0 ? PARCHMENT.brighter()
