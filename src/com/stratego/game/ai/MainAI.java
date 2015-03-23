@@ -5,20 +5,36 @@ import java.util.Random;
 
 import com.stratego.game.MainGame;
 import com.stratego.game.Movement;
+import com.stratego.game.PieceData;
 import com.stratego.game.Tile;
 
 public class MainAI{
 	private static int aiSide = 0;
 	public static void aiTurn(){
+		Tile home = null;
+	    for (int x = 0; x<10; x++){
+	        for (int y = 0; y<10;y++){
+	          if (MainGame.gameBoard[x][y].piece.soldierSide == aiSide){
+	            if (home==null){
+	            	home = MainGame.gameBoard[x][y];
+	            } else if (MainGame.gameBoard[x][y].piece.soldierRank > home.piece.soldierRank){
+	            	home = MainGame.gameBoard[x][y];
+	            }
+	          }
+	        }
+	    }
+		aiFindNearest(home);
     //weighting?
 	}
 	public static Tile aiFindNearest(Tile home){
-    Tile closestTile = MainGame.gameBoard[0][0];
+    Tile closestTile = null;
     
     for (int x = 0; x<10; x++){
       for (int y = 0; y<10;y++){
-        if (MainGame.gameBoard[x][y].piece.soldierSide != aiSide){
-          
+        if (MainGame.gameBoard[x][y].piece.soldierSide != aiSide){      
+ //       	if (){
+        		
+   //     	}
         }
       }
     }
@@ -40,6 +56,7 @@ public class MainAI{
        				int toFill = new Random().nextInt(10)+(9-row)*10;
        				if (filled[toFill] == false){
        					Movement.preparePiece(col,row,ranks[toFill], 1);
+       					PieceData.removePieceFromWell(ranks[toFill], 1);
        					filled[toFill] = true;
        					thisFilled = true;
        				}
@@ -66,6 +83,7 @@ public class MainAI{
        			// true and ((true or true/false) and (true and true/false))
        			if (filled[toFill] == false && !((toFill==2 || toFill==3 || toFill ==6 ||toFill==7)&&frontRank[toFill]==1)){
        				Movement.preparePiece(toFill,frontRowY,frontRank[col], aiSide);
+   					PieceData.removePieceFromWell(frontRank[col], aiSide);
        				filled[toFill] = true;
        				//array of pieces to place place next one based on col
        				thisFilled = true;
@@ -94,6 +112,7 @@ public class MainAI{
        				int toFill = new Random().nextInt(colToFill);
        				if (filled[toFill+extraFill] == false){
        					Movement.preparePiece(col,row,backRanks[toFill+extraFill], aiSide);
+       					PieceData.removePieceFromWell(backRanks[toFill+extraFill], aiSide);
        					filled[toFill+extraFill] = true;
        					thisFilled = true;
        				}
@@ -103,5 +122,8 @@ public class MainAI{
 	Movement.preparePiece(8,0,11, aiSide);
 	Movement.preparePiece(9,0,12, aiSide);
 	Movement.preparePiece(9,1,11, aiSide);
+	PieceData.removePieceFromWell(11, aiSide);
+	PieceData.removePieceFromWell(11, aiSide);
+	PieceData.removePieceFromWell(12, aiSide);
     } 
 }
