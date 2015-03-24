@@ -8,42 +8,86 @@ import com.stratego.game.Movement;
 import com.stratego.game.PieceData;
 import com.stratego.game.Tile;
 
-public class MainAI {
+public class MainAI{
 	private static int aiSide = 0;
-
-	public static void aiTurn() {
+	public static void aiTurn(){
 		Tile home = null;
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
-				if (MainGame.gameBoard[x][y].piece.soldierSide == aiSide) {
-					if (home == null) {
-						home = MainGame.gameBoard[x][y];
-					} else if (MainGame.gameBoard[x][y].piece.soldierRank > home.piece.soldierRank) {
-						home = MainGame.gameBoard[x][y];
+		Tile target = null;
+	    for (int x = 0; x<10; x++){
+	        for (int y = 0; y<10;y++){
+	          if (MainGame.gameBoard[x][y].piece.soldierSide == aiSide){
+	            if (home==null){
+	            	home = MainGame.gameBoard[x][y];
+	            } else if (MainGame.gameBoard[x][y].piece.soldierRank > home.piece.soldierRank){
+	            	home = MainGame.gameBoard[x][y];
+	            }
+	          }
+	        }
+	    }
+		target = aiFindNearest(home);
+		aiReachTarget(home, target);
+    //weighting?
+	}
+	public static Tile aiFindNearest(Tile home){
+		Tile closestTile = null;
+    	for (int x = 0; x<10; x++){
+    	for (int y = 0; y<10;y++){
+    	  if (MainGame.gameBoard[x][y].piece.soldierSide != aiSide){      
+        		if (closestTile == null){
+        			closestTile = MainGame.gameBoard[x][y];//finish checking for adjacent spy
+        		} else if (Math.abs(MainGame.gameBoard[x][y].piece.x-home.piece.x)+ Math.abs(MainGame.gameBoard[x][y].piece.y-home.piece.y)<Math.abs(closestTile.piece.x - home.piece.x)+ Math.abs(closestTile.piece.y - home.piece.y)){
+        			closestTile = MainGame.gameBoard[x][y];
+        		}
+        	}
+    	}
+    	}
+    //Calc closest piece
+    return closestTile;
+	}
+	public static boolean shouldMoveHere(Tile here){
+		if ((MainGame.gameBoard[here.piece.x][here.piece.y].piece.soldierRank !=11 && MainGame.gameBoard[here.piece.x-1][here.piece.y].piece.soldierRank != 10&&MainGame.gameBoard[here.piece.x+1][here.piece.y].piece.soldierRank != 10&&MainGame.gameBoard[here.piece.x][here.piece.y-1].piece.soldierRank != 10&&MainGame.gameBoard[here.piece.x][here.piece.y+1].piece.soldierRank != 10)&&MainGame.gameBoard[here.piece.x][here.piece.y].moveable == true){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public static void aiReachTarget(Tile start, Tile finish){
+		int goalX = finish.piece.x;
+		int goalY = finish.piece.y;
+		int currentX = start.piece.x;
+		int currentY = start.piece.y;
+		int moveToX;
+		int moveToY;
+		Pathway[] paths = new Pathway[100];
+		for (int k = 0; k<100; k++){
+			Arrays.fill(paths[k].xPath, -1);
+		}
+		paths[0].used = true;
+		while (currentX != goalX && currentY != goalY){
+			int usedPathways = 0;
+			//collection of null checks on pathways
+			for (int i = 1; i<100; i++){
+				if (paths[i].used == true){
+					usedPathways++;
+				}
+			}
+			for (int j = 0; j<=usedPathways; j++){
+				if (currentX<goalX){
+					if (shouldMoveHere(MainGame.gameBoard[currentX+1][currentY])==true){
+						currentX++;
+						for(int loop = 0; loop <= 100; loop++){
+							if (paths[j].xPath[loop] ==-1){
+								paths[j].xPath[loop] =currentX;
+								break;//only breaking out of one?
+							}
+						}
+					}else if (currentY<goalY){
+						
 					}
 				}
 			}
 		}
-		aiFindNearest(home);
-		// weighting?
 	}
-
-	public static Tile aiFindNearest(Tile home) {
-		Tile closestTile = null;
-
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
-				if (MainGame.gameBoard[x][y].piece.soldierSide != aiSide) {
-					// if (){
-
-					// }
-				}
-			}
-		}
-		// Calc closest piece
-		return closestTile;
-	}
-
 	public static void setPlayerBoard() {
 		int[] ranks = { 12, 11, 11, 11, 8, 5, 7, 4, 3, 4, 6, 6, 7, 5, 5, 8, 3,
 				8, 6, 7, 11, 9, 5, 7, 8, 6, 4, 9, 9, 8, 10, 9, 9, 9, 1, 2, 9, 9,
