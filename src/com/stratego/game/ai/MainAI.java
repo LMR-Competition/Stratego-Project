@@ -64,20 +64,20 @@ public class MainAI{
 		//ask if piece in way, next in cardinal direction can move, if so move in possible direction, towards enemy if poss, else continue in cardinal directions
 		// if none of above do random?
 	}
-	public static char aiCanMove(Tile mover){
+	public static char canMove(Tile mover){
 		if (mover.piece.soldierRank >10){
 			return 'x';
 		}
-		else if (MainGame.gameBoard[mover.piece.x][mover.piece.y+1].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x][mover.piece.y+1].moveable == true){
+		else if (mover.piece.y+1<=9 && MainGame.gameBoard[mover.piece.x][mover.piece.y+1].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x][mover.piece.y+1].moveable == true){
 			return 's';
 		}
-		else if (MainGame.gameBoard[mover.piece.x+1][mover.piece.y].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x+1][mover.piece.y].moveable == true){
+		else if (mover.piece.x+1<=9 && MainGame.gameBoard[mover.piece.x+1][mover.piece.y].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x+1][mover.piece.y].moveable == true){
 			return 'e';
 		}
-		else if (MainGame.gameBoard[mover.piece.x-1][mover.piece.y].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x-1][mover.piece.y].moveable == true){
+		else if (mover.piece.x-1>=0 && MainGame.gameBoard[mover.piece.x-1][mover.piece.y].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x-1][mover.piece.y].moveable == true){
 			return 'w';
 		}
-		else if (MainGame.gameBoard[mover.piece.x][mover.piece.y-1].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x][mover.piece.y-1].moveable == true){
+		else if (mover.piece.y-1>=0 && MainGame.gameBoard[mover.piece.x][mover.piece.y-1].piece.soldierSide != aiSide&&MainGame.gameBoard[mover.piece.x][mover.piece.y-1].moveable == true){
 			return 'n';
 		} else{
 			return 'x';
