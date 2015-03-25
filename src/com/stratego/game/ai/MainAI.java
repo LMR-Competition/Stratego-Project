@@ -321,11 +321,11 @@ public class MainAI{
 						aiFreeSpaceFor(start);//SAVE FOR LAST, hope never gets here
 					}
 				
+				}
 				
 				
 				
-				
-			} if (currentY>goalY){
+			} else if (currentY>goalY){
 				if (shouldMoveHere(MainGame.gameBoard[currentX][currentY-1])==true){
 					currentY--;
 				} /*both need increasing, can increase neither*/else if (shouldMoveHere(MainGame.gameBoard[currentX][currentY+1])==true && shouldMoveHere(MainGame.gameBoard[currentX+1][currentY])==true &&shouldMoveHere(MainGame.gameBoard[currentX-1][currentY])==true){
@@ -470,6 +470,8 @@ public class MainAI{
 					}else{//free up space for the highest piece to move.
 						aiFreeSpaceFor(start);//SAVE FOR LAST, hope never gets here
 					}
+			
+			}
 				chosenPath = j;
 			}
 		}
