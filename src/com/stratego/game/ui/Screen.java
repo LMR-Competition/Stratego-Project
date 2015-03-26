@@ -22,6 +22,7 @@ import com.stratego.game.Movement;
 import com.stratego.game.Piece;
 import com.stratego.game.PieceData;
 import com.stratego.game.Tile;
+import com.stratego.game.ai.MainAI;
 import com.stratego.game.saves.SaveManager;
 
 public class Screen {
@@ -31,6 +32,8 @@ public class Screen {
 	 * 
 	 * 0 - Main menu 1 - ???? 2 - Game screen
 	 */
+	private static boolean cheatsAllowed = true;
+
 	private static int screenModeValue = 0, mouseX = 0, mouseY = 0,
 			gridMouseX = -1, gridMouseY = -1, selectX = -1, selectY = -1,
 			turnSide = 0, prevTurn = 1;
@@ -55,10 +58,9 @@ public class Screen {
 
 	private static boolean startSel = false, loadSel = false, quitSel = false,
 			newSel = false, saveSel = false, endTurnSel = false,
-			endTurnCancel = false, instructionsSel = false,
-			mouseLockedToOverlay = false, instructionsCloseSel = false,
-			switchSel = false, loadContSel = false, winMenuSel = false,
-			newYesSel = false, newNoSel = false;
+			instructionsSel = false, mouseLockedToOverlay = false,
+			instructionsCloseSel = false, switchSel = false,
+			loadContSel = false, winMenuSel = false;
 
 	private static boolean instructionsShown = false,
 			betweenTurnsShown = false, loadShown = false, newShown = false,
@@ -87,6 +89,11 @@ public class Screen {
 				t2.piece = null;
 			}
 		}
+		
+		prevSX = -1;
+		prevSY = -1;
+		prevMX = -1;
+		prevMY = -1;
 	}
 
 	public static void setupSavegame(Piece[] pieces, int turn,
@@ -502,14 +509,64 @@ public class Screen {
 			public void keyPressed(KeyEvent e) {
 
 				if (e.isShiftDown() && e.isControlDown() && e.isAltDown()) {
-
-					if (e.getKeyCode() == KeyEvent.VK_W) {
+					
+					if (e.getKeyCode() == KeyEvent.VK_C) {
 
 						GameManager.getLogger().log(
-								"Cheat activated! (WIN_AUTO)");
+								"Cheat activated! (DISABLE/ENABLE_CHEATS)");
 
-						wonShown = true;
-						mouseLockedToOverlay = true;
+						cheatsAllowed = !cheatsAllowed;
+
+					}
+					
+					if (cheatsAllowed) {
+						
+						if (e.getKeyCode() == KeyEvent.VK_W) {
+
+							GameManager.getLogger().log(
+									"Cheat activated! (WIN_AUTO)");
+
+							wonShown = true;
+							mouseLockedToOverlay = true;
+
+						} else if (e.getKeyCode() == KeyEvent.VK_M) {
+
+							GameManager.getLogger().log(
+									"Cheat activated! (MOVE_AGAIN)");
+
+							hasMoved = false;
+
+						} else if (e.getKeyCode() == KeyEvent.VK_A) {
+
+							GameManager.getLogger().log(
+									"Cheat activated! (AI_SETUP)");
+
+							MainAI.setBoard();
+							MainAI.setPlayerBoard();
+
+							timesSetup = 2;
+							isInSetup = false;
+
+						} else if (e.getKeyCode() == KeyEvent.VK_S) {
+
+							GameManager.getLogger().log(
+									"Cheat activated! (SHOW_ENEMY)");
+
+							for (int x = 0; x < 10; x++) {
+
+								for (int y = 0; y < 10; y++) {
+
+									if (MainGame.gameBoard[x][y].piece != null) {
+
+										if (MainGame.gameBoard[x][y].piece.soldierSide != turnSide) {
+
+											MainGame.gameBoard[x][y].piece.justAttacked = true;
+										}
+									}
+								}
+							}
+
+						}
 					}
 				}
 			}
