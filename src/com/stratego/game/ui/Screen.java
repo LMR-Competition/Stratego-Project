@@ -419,7 +419,7 @@ public class Screen {
 
 							try {
 
-								URL url = new URL("http://www.google.com");
+								URL url = new URL("http://www.hasbro.com/common/instruct/stratego.pdf");
 
 								if (Desktop.isDesktopSupported()) {
 
