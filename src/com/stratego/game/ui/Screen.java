@@ -2,6 +2,7 @@ package com.stratego.game.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -10,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +62,8 @@ public class Screen {
 			newSel = false, saveSel = false, endTurnSel = false,
 			instructionsSel = false, mouseLockedToOverlay = false,
 			instructionsCloseSel = false, switchSel = false,
-			loadContSel = false, winMenuSel = false;
+			loadContSel = false, winMenuSel = false,
+			instructionsOnlineSel = false;
 
 	private static boolean instructionsShown = false,
 			betweenTurnsShown = false, loadShown = false, newShown = false,
@@ -89,7 +92,7 @@ public class Screen {
 				t2.piece = null;
 			}
 		}
-		
+
 		prevSX = -1;
 		prevSY = -1;
 		prevMX = -1;
@@ -411,6 +414,20 @@ public class Screen {
 
 							mouseLockedToOverlay = false;
 							instructionsShown = false;
+
+						} else if (instructionsOnlineSel) {
+
+							try {
+
+								URL url = new URL("http://www.google.com");
+
+								if (Desktop.isDesktopSupported()) {
+
+									Desktop.getDesktop().browse(url.toURI());
+								}
+
+							} catch (Exception ex) {
+							}
 						}
 
 					} else if (betweenTurnsShown) {
@@ -509,7 +526,7 @@ public class Screen {
 			public void keyPressed(KeyEvent e) {
 
 				if (e.isShiftDown() && e.isControlDown() && e.isAltDown()) {
-					
+
 					if (e.getKeyCode() == KeyEvent.VK_C) {
 
 						GameManager.getLogger().log(
@@ -518,9 +535,9 @@ public class Screen {
 						cheatsAllowed = !cheatsAllowed;
 
 					}
-					
+
 					if (cheatsAllowed) {
-						
+
 						if (e.getKeyCode() == KeyEvent.VK_W) {
 
 							GameManager.getLogger().log(
@@ -1633,6 +1650,65 @@ public class Screen {
 						(engine.getHeight() / 2) - (instHeight / 2),
 						instHeight, instHeight);
 
+				g.setColor(PARCHMENT.darker().darker().darker());
+				Font instFont = new Font("Times New Roman", Font.BOLD, 2);
+				instFont = instFont.deriveFont((float) engine
+						.percentageFontSize(instFont, 0.03f));
+				g.setFont(instFont);
+				g.drawString("GOAL: Capture the enemy's flag",
+						(engine.getWidth() / 2) - (instHeight / 2) + 10,
+						(engine.getHeight() / 2) - (instHeight / 2) + 10
+								+ (g.getFontMetrics().getHeight() / 2));
+				g.drawString("SPECIAL PIECES:", (engine.getWidth() / 2)
+						- (instHeight / 2) + 10, (engine.getHeight() / 2)
+						- (instHeight / 2) + 25
+						+ (g.getFontMetrics().getHeight() / 2) + 40);
+
+				instFont = instFont.deriveFont(Font.PLAIN);
+
+				PieceDrawer.drawPiece(engine, 11, 0, (engine.getWidth() / 2)
+						- (instHeight / 2) + 10, (engine.getHeight() / 2)
+						- (instHeight / 2) + 160
+						+ (g.getFontMetrics().getHeight() / 2) + 10, 80, 80, 0,
+						-1, -1, false, false);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+				g.setFont(instFont);
+				g.drawString("SPY: Kills 1, but only if Spy attacks",
+						(engine.getWidth() / 2) - (instHeight / 2) + 110,
+						(engine.getHeight() / 2) - (instHeight / 2) + 70
+								+ (g.getFontMetrics().getHeight() / 2) + 40);
+
+				PieceDrawer.drawPiece(engine, 10, 0, (engine.getWidth() / 2)
+						- (instHeight / 2) + 10, (engine.getHeight() / 2)
+						- (instHeight / 2) + 70
+						+ (g.getFontMetrics().getHeight() / 2) + 10, 80, 80, 0,
+						-1, -1, false, false);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+				g.setFont(instFont);
+				g.drawString("BOMB: Destroys anything but 8, which",
+						(engine.getWidth() / 2) - (instHeight / 2) + 110,
+						(engine.getHeight() / 2) - (instHeight / 2) + 160
+								+ (g.getFontMetrics().getHeight() / 2) + 40);
+				g.drawString("kills it", (engine.getWidth() / 2)
+						- (instHeight / 2) + 220, (engine.getHeight() / 2)
+						- (instHeight / 2) + 190
+						+ (g.getFontMetrics().getHeight() / 2) + 40);
+
+				PieceDrawer.drawPiece(engine, 12, 0, (engine.getWidth() / 2)
+						- (instHeight / 2) + 10, (engine.getHeight() / 2)
+						- (instHeight / 2) + 250
+						+ (g.getFontMetrics().getHeight() / 2) + 10, 80, 80, 0,
+						-1, -1, false, false);
+
+				g.setColor(PARCHMENT.darker().darker().darker());
+				g.setFont(instFont);
+				g.drawString("FLAG: Capture this to win",
+						(engine.getWidth() / 2) - (instHeight / 2) + 110,
+						(engine.getHeight() / 2) - (instHeight / 2) + 250
+								+ (g.getFontMetrics().getHeight() / 2) + 40);
+
 				// INSTRUCTIONS CLOSE
 
 				g.setFont(font);
@@ -1672,6 +1748,47 @@ public class Screen {
 				g.drawString(instClose,
 						xL + 5 + (g.getFontMetrics().stringWidth(instClose))
 								- 54, yT + 17
+								+ (g.getFontMetrics().getHeight() / 4));
+
+				// INSTRUCTIONS OPEN FULL
+
+				g.setFont(font);
+
+				String instOnl = "ONLINE INSTRUCTIONS";
+
+				xL = (engine.getWidth() / 2)
+						- ((g.getFontMetrics().stringWidth(instOnl) / 2) + 16);
+				xR = (engine.getWidth() / 2)
+						+ ((g.getFontMetrics().stringWidth(instOnl) / 2) + 26);
+				yT = (engine.getHeight() / 2) + (instHeight / 2) - 92;
+				yB = yT + 34;
+
+				if (mX >= xL && mX <= xR && mY >= yT && mY <= yB) {
+
+					instructionsOnlineSel = true;
+
+					g.setColor(GOLD.brighter());
+
+				} else {
+
+					instructionsOnlineSel = false;
+
+					g.setColor(GOLD);
+				}
+
+				g.fillRect(xL, yT,
+						g.getFontMetrics().stringWidth(instOnl) + 40, 34);
+
+				g.setColor(g.getColor().darker());
+
+				g.drawRect(xL, yT,
+						g.getFontMetrics().stringWidth(instOnl) + 40, 34);
+
+				g.setColor(Color.BLACK);
+
+				g.drawString(instOnl,
+						xL + 5 + (g.getFontMetrics().stringWidth(instOnl))
+								- 216, yT + 17
 								+ (g.getFontMetrics().getHeight() / 4));
 			}
 
